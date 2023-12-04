@@ -6,6 +6,7 @@
 // 5. Sum all the created numbers
 
 mod problem_1;
+mod problem_2;
 
 use std::process;
 
