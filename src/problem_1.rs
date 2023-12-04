@@ -2,8 +2,7 @@ use std::{error::Error, fs};
 
 pub fn problem_1() -> Result<(), Box<dyn Error>> {
     let file_path = "./res/01/input";
-    let contents = fs::read_to_string(file_path)?; //.expect("Should have been able to read the file");
-
+    let contents = fs::read_to_string(file_path)?;
     let mut calibration_sum = 0;
 
     for mut line in contents.lines() {
