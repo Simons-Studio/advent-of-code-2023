@@ -15,4 +15,9 @@ fn main() {
         println!("Application Error: {e}");
         process::exit(1);
     }
+
+    if let Err(e) = problem_2::problem_2() {
+        println!("Application Error: {e}");
+        process::exit(1);
+    }
 }

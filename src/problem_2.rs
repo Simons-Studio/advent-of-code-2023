@@ -10,6 +10,7 @@ pub fn problem_2() -> Result<(), Box<dyn Error>> {
             let min_cubes = min_cube_count(&game);
 
             if min_cubes.red <= 12 && min_cubes.green <= 13 && min_cubes.blue <= 14 {
+                // println!("{line}");
                 calibration_sum += game.id;
             }
         }
@@ -59,7 +60,32 @@ fn interpret_draw(input: &str) -> Option<BagDraw> {
         return None;
     }
 
-    None
+    let mut red = 0;
+    let mut green = 0;
+    let mut blue = 0;
+
+    let mut colour_count = colours.len();
+
+    for colour in colours {
+        if let Some(count) = colour.strip_suffix("red") {
+            red = count.trim().parse().unwrap();
+            colour_count -= 1;
+        }
+        if let Some(count) = colour.strip_suffix("green") {
+            green = count.trim().parse().unwrap();
+            colour_count -= 1;
+        }
+        if let Some(count) = colour.strip_suffix("blue") {
+            blue = count.trim().parse().unwrap();
+            colour_count -= 1;
+        }
+    }
+
+    if colour_count == 0 {
+        Some(BagDraw { red, green, blue })
+    } else {
+        None
+    }
 }
 
 fn min_cube_count(game: &Game) -> BagDraw {
