@@ -114,10 +114,6 @@ fn has_symbol_neighbour(
     false
 }
 
-fn within_bounds(row: usize, col: usize, grid_height: usize, grid_width: usize) -> bool {
-    row < grid_height && col < grid_width
-}
-
 fn is_symbol(c: char) -> bool {
     let symbols = "!@#$%^&*()<>?/|-=+_[]{}";
     symbols.contains(c)
