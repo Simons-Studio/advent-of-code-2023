@@ -4,6 +4,9 @@ pub fn problem_3() -> Result<(), Box<dyn Error>> {
     let file_path = "./res/03/input";
     let contents = fs::read_to_string(file_path)?;
     let grid = create_engine_grid(contents);
+    let part_number_sum = part_number_accumulator(grid);
+
+    println!("The sum of all the part numbers is: {}", part_number_sum);
 
     Ok(())
 }
@@ -19,21 +22,30 @@ fn create_engine_grid(input: String) -> Vec<Vec<char>> {
     rows
 }
 
-fn part_number_accumulator(grid: Vec<Vec<char>>) {
+fn part_number_accumulator(grid: Vec<Vec<char>>) -> i32 {
     if grid.len() <= 0 {
         panic!("Grid too short");
     }
 
     let mut part_number_sum = 0;
 
-    let height = grid.len();
-    let width = grid[0].len();
+    let grid_height = grid.len();
+    let grid_width = grid[0].len();
 
-    for row in 0..height {
-        for col in 0..width {
-            part_number(row, col, height, width, grid);
+    for row in 0..grid_height {
+        let mut col = 0;
+        while col < grid_width {
+            if let Some(number_string) = part_number(row, col, grid_height, grid_width, &grid) {
+                col += number_string.len();
+                let part_number: i32 = number_string.parse().unwrap();
+                part_number_sum += part_number;
+            } else {
+                col += 1;
+            }
         }
     }
+
+    part_number_sum
 }
 
 fn part_number(
@@ -41,23 +53,32 @@ fn part_number(
     col: usize,
     grid_height: usize,
     grid_width: usize,
-    grid: Vec<Vec<char>>,
-) -> Option<i32> {
+    grid: &Vec<Vec<char>>,
+) -> Option<String> {
     let character = grid[row][col];
     if character.is_ascii_digit() {
-        let length = length_of_number(row, col);
-        if has_symbol_neighbour(row, col, length, grid_height, grid_width, grid) {
+        let length = length_of_number(row, col, grid_width, &grid);
+        if has_symbol_neighbour(row, col, length, grid_height, grid_width, &grid) {
             let number_chars = &grid[row][col..col + length];
             let number_string: String = number_chars.iter().collect();
-            let number: i32 = number_string.parse().unwrap();
-            return Some(number);
+            return Some(number_string);
         }
     }
 
     None
 }
 
-fn length_of_number(row: usize, col: usize) -> usize {}
+fn length_of_number(row: usize, col: usize, grid_width: usize, grid: &Vec<Vec<char>>) -> usize {
+    let mut length = 0;
+    let mut within_bound = col + length < grid_width;
+
+    while within_bound && grid[row][col + length].is_ascii_digit() {
+        length += 1;
+        within_bound = col + length < grid_width;
+    }
+
+    length
+}
 
 fn has_symbol_neighbour(
     row: usize,
@@ -65,15 +86,27 @@ fn has_symbol_neighbour(
     length: usize,
     grid_height: usize,
     grid_width: usize,
-    grid: Vec<Vec<char>>,
+    grid: &Vec<Vec<char>>,
 ) -> bool {
-    for check_row in row - 1..row + 1 {
-        for check_col in col - 1..col + length + 1 {
-            if within_bounds(check_row, check_col, grid_height, grid_width) {
-                let neighbour = grid[check_row][check_col];
-                if is_symbol(neighbour) {
-                    return true;
-                }
+    // Set bounds
+    let min_row = if row == 0 { 0 } else { row - 1 };
+    let min_col = if col == 0 { 0 } else { col - 1 };
+    let max_row = if row >= grid_height {
+        grid_height
+    } else {
+        row + 1
+    };
+    let max_col = if col + length >= grid_width {
+        grid_width
+    } else {
+        col + length + 1
+    };
+
+    for check_row in min_row..max_row {
+        for check_col in min_col..max_col {
+            let neighbour = grid[check_row][check_col];
+            if is_symbol(neighbour) {
+                return true;
             }
         }
     }
@@ -82,7 +115,10 @@ fn has_symbol_neighbour(
 }
 
 fn within_bounds(row: usize, col: usize, grid_height: usize, grid_width: usize) -> bool {
-    row >= 0 && row < grid_height && col >= 0 && col < grid_width
+    row < grid_height && col < grid_width
 }
 
-fn is_symbol(c: char) -> bool {}
+fn is_symbol(c: char) -> bool {
+    let symbols = "!@#$%^&*()<>?/|-=+_[]{}";
+    symbols.contains(c)
+}
