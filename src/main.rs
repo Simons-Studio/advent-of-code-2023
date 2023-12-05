@@ -7,6 +7,7 @@
 
 mod problem_1;
 mod problem_2;
+mod problem_3;
 
 use std::process;
 
@@ -17,6 +18,11 @@ fn main() {
     }
 
     if let Err(e) = problem_2::problem_2() {
+        println!("Application Error: {e}");
+        process::exit(1);
+    }
+
+    if let Err(e) = problem_3::problem_3() {
         println!("Application Error: {e}");
         process::exit(1);
     }
