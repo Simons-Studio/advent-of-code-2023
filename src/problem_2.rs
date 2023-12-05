@@ -4,19 +4,23 @@ pub fn problem_2() -> Result<(), Box<dyn Error>> {
     let file_path = "./res/02/input";
     let contents = fs::read_to_string(file_path)?;
     let mut calibration_sum = 0;
+    let mut power_sum = 0;
 
     for line in contents.lines() {
         if let Some(game) = interpret_game(line) {
             let min_cubes = min_cube_count(&game);
 
+            let power = min_cubes.red * min_cubes.green * min_cubes.blue;
+            power_sum += power;
+
             if min_cubes.red <= 12 && min_cubes.green <= 13 && min_cubes.blue <= 14 {
-                // println!("{line}");
                 calibration_sum += game.id;
             }
         }
     }
 
     println!("\nThe total calibration sum is: {}", calibration_sum);
+    println!("\nThe total power sum is: {}", power_sum);
 
     Ok(())
 }
