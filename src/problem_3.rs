@@ -5,8 +5,6 @@ pub fn problem_3() -> Result<(), Box<dyn Error>> {
     let contents = fs::read_to_string(file_path)?;
     let grid = create_engine_grid(contents);
 
-    // 1. Convert to grid
-
     Ok(())
 }
 
@@ -21,28 +19,70 @@ fn create_engine_grid(input: String) -> Vec<Vec<char>> {
     rows
 }
 
-fn identify_neighbours(
+fn part_number_accumulator(grid: Vec<Vec<char>>) {
+    if grid.len() <= 0 {
+        panic!("Grid too short");
+    }
+
+    let mut part_number_sum = 0;
+
+    let height = grid.len();
+    let width = grid[0].len();
+
+    for row in 0..height {
+        for col in 0..width {
+            part_number(row, col, height, width, grid);
+        }
+    }
+}
+
+fn part_number(
     row: usize,
     col: usize,
-    max_row: usize,
-    max_col: usize,
+    grid_height: usize,
+    grid_width: usize,
     grid: Vec<Vec<char>>,
-) -> Option<Vec<char>> {
-    let mut check_row = row - 1;
-    let mut check_col = col - 1;
-    let mut number_length = 0;
-
-    let x = grid[0][0];
-
-    if within_bounds(check_row, check_col, max_row, max_col) {
-        let neighbour = grid[check_row][check_col];
+) -> Option<i32> {
+    let character = grid[row][col];
+    if character.is_ascii_digit() {
+        let length = length_of_number(row, col);
+        if has_symbol_neighbour(row, col, length, grid_height, grid_width, grid) {
+            let number_chars = &grid[row][col..col + length];
+            let number_string: String = number_chars.iter().collect();
+            let number: i32 = number_string.parse().unwrap();
+            return Some(number);
+        }
     }
 
     None
 }
 
-fn within_bounds(row: usize, col: usize, max_row: usize, max_col: usize) -> bool {
-    row >= 0 && row < max_row && col >= 0 && col < max_col
+fn length_of_number(row: usize, col: usize) -> usize {}
+
+fn has_symbol_neighbour(
+    row: usize,
+    col: usize,
+    length: usize,
+    grid_height: usize,
+    grid_width: usize,
+    grid: Vec<Vec<char>>,
+) -> bool {
+    for check_row in row - 1..row + 1 {
+        for check_col in col - 1..col + length + 1 {
+            if within_bounds(check_row, check_col, grid_height, grid_width) {
+                let neighbour = grid[check_row][check_col];
+                if is_symbol(neighbour) {
+                    return true;
+                }
+            }
+        }
+    }
+
+    false
+}
+
+fn within_bounds(row: usize, col: usize, grid_height: usize, grid_width: usize) -> bool {
+    row >= 0 && row < grid_height && col >= 0 && col < grid_width
 }
 
 fn is_symbol(c: char) -> bool {}
