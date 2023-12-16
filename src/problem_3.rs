@@ -94,7 +94,7 @@ fn has_symbol_neighbour(
     let max_row = if row >= grid_height {
         grid_height
     } else {
-        row + 1
+        row + 2
     };
     let max_col = if col + length >= grid_width {
         grid_width
@@ -102,14 +102,20 @@ fn has_symbol_neighbour(
         col + length + 1
     };
 
+    println!("");
+    println!("min row: {min_row}, min col: {min_col}, max row: {max_row}, max col: {max_col}");
+
     for check_row in min_row..max_row {
         for check_col in min_col..max_col {
             let neighbour = grid[check_row][check_col];
+            print!("{neighbour}");
             if is_symbol(neighbour) {
                 return true;
             }
         }
+        println!("");
     }
+    println!("");
 
     false
 }
@@ -117,4 +123,52 @@ fn has_symbol_neighbour(
 fn is_symbol(c: char) -> bool {
     let symbols = "!@#$%^&*()<>?/|-=+_[]{}";
     symbols.contains(c)
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::problem_3::has_symbol_neighbour;
+
+    #[test]
+    fn has_symbol_neighbour_test() {
+        let row = 0;
+        let col = 0;
+        let length = 3;
+        let grid_height = 3;
+        let grid_width = 4;
+        let grid = vec![
+            vec!['1', '2', '3', '.'],
+            vec!['.', '.', '.', '#'],
+            vec!['.', '.', '.', '.'],
+        ];
+        assert!(has_symbol_neighbour(
+            row,
+            col,
+            length,
+            grid_height,
+            grid_width,
+            &grid
+        ));
+
+        let row = 2;
+        let col = 0;
+        let length = 3;
+        let grid_height = 5;
+        let grid_width = 5;
+        let grid = vec![
+            vec!['#', '#', '#', '#', '#'],
+            vec!['.', '.', '.', '.', '#'],
+            vec!['1', '2', '3', '.', '#'],
+            vec!['.', '.', '.', '.', '#'],
+            vec!['#', '#', '#', '#', '#'],
+        ];
+        assert!(!has_symbol_neighbour(
+            row,
+            col,
+            length,
+            grid_height,
+            grid_width,
+            &grid
+        ));
+    }
 }
