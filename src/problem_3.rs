@@ -91,12 +91,12 @@ fn has_symbol_neighbour(
     // Set bounds
     let min_row = if row == 0 { 0 } else { row - 1 };
     let min_col = if col == 0 { 0 } else { col - 1 };
-    let max_row = if row >= grid_height {
+    let max_row = if row + 2 >= grid_height {
         grid_height
     } else {
         row + 2
     };
-    let max_col = if col + length >= grid_width {
+    let max_col = if col + length + 1 >= grid_width {
         grid_width
     } else {
         col + length + 1
@@ -163,6 +163,25 @@ mod tests {
             vec!['#', '#', '#', '#', '#'],
         ];
         assert!(!has_symbol_neighbour(
+            row,
+            col,
+            length,
+            grid_height,
+            grid_width,
+            &grid
+        ));
+
+        let row = 2;
+        let col = 0;
+        let length = 3;
+        let grid_height = 3;
+        let grid_width = 4;
+        let grid = vec![
+            vec!['.', '.', '.', '.'],
+            vec!['.', '.', '.', '.'],
+            vec!['1', '2', '3', '#'],
+        ];
+        assert!(has_symbol_neighbour(
             row,
             col,
             length,
