@@ -125,6 +125,34 @@ fn is_symbol(c: char) -> bool {
     symbols.contains(c)
 }
 
+// PART 2
+
+fn numbers_adjacent_to_star(
+    row: usize,
+    col: usize,
+    grid_height: usize,
+    grid_width: usize,
+    grid: &Vec<Vec<char>>,
+) -> bool {
+    // Set bounds
+    let min_row = if row == 0 { 0 } else { row - 1 };
+    let min_col = if col == 0 { 0 } else { col - 1 };
+    let max_row = if row + 2 >= grid_height {
+        grid_height
+    } else {
+        row + 2
+    };
+    let max_col = if col + 2 >= grid_width {
+        grid_width
+    } else {
+        col + 2
+    };
+
+    // TODO: Extend the part_number function to work at any index in the number
+    // TODO: Also extend the function length_of_number corrispondingly
+    false
+}
+
 #[cfg(test)]
 mod tests {
     use crate::problem_3::has_symbol_neighbour;
