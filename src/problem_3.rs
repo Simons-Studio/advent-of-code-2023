@@ -102,9 +102,6 @@ fn has_symbol_neighbour(
         col + length + 1
     };
 
-    println!("");
-    println!("min row: {min_row}, min col: {min_col}, max row: {max_row}, max col: {max_col}");
-
     for check_row in min_row..max_row {
         for check_col in min_col..max_col {
             let neighbour = grid[check_row][check_col];
@@ -113,9 +110,7 @@ fn has_symbol_neighbour(
                 return true;
             }
         }
-        println!("");
     }
-    println!("");
 
     false
 }
