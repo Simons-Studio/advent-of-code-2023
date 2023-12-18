@@ -61,10 +61,10 @@ fn get_part_number(
         if has_symbol_neighbour(row, col, length, grid_height, grid_width, &grid) {
             let number_chars = &grid[row][col..col + length];
             let number_string: String = number_chars.iter().collect();
+            let position = Position { row, col };
             return Some(PartNumber {
                 number_string,
-                row,
-                col,
+                position,
             });
         }
     }
@@ -126,6 +126,10 @@ fn is_symbol(c: char) -> bool {
 
 struct PartNumber {
     number_string: String,
+    position: Position,
+}
+
+struct Position {
     row: usize,
     col: usize,
 }
@@ -153,9 +157,46 @@ fn numbers_adjacent_to_star(
         col + 2
     };
 
-    // TODO: Extend the part_number function to work at any index in the number
-    // TODO: Also extend the function length_of_number corrispondingly
     false
+}
+
+fn get_number(
+    row: usize,
+    col: usize,
+    grid_width: usize,
+    grid: &Vec<Vec<char>>,
+) -> Option<PartNumber> {
+    let character = grid[row][col];
+    if character.is_ascii_digit() {
+        let mut index = col;
+        let mut length = 0;
+        let mut within_bound = index > 0;
+
+        while within_bound && grid[row][index - 1].is_ascii_digit() {
+            index -= 1;
+            length += 1;
+            within_bound = index > 0;
+        }
+
+        within_bound = index + length < grid_width;
+
+        while within_bound && grid[row][index + length].is_ascii_digit() {
+            length += 1;
+            within_bound = index + length < grid_width;
+        }
+
+        let position = Position { row, col: index };
+
+        let number_chars = &grid[row][index..index + length];
+        let number_string: String = number_chars.iter().collect();
+
+        Some(PartNumber {
+            number_string,
+            position,
+        })
+    } else {
+        None
+    }
 }
 
 #[cfg(test)]
