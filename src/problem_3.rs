@@ -267,7 +267,8 @@ fn get_number(
 #[cfg(test)]
 mod tests {
     use crate::problem_3::{
-        get_number, has_symbol_neighbour, numbers_adjacent_to_gear, PartNumber, Position,
+        gear_ratio_accumulator, get_number, has_symbol_neighbour, numbers_adjacent_to_gear,
+        PartNumber, Position,
     };
 
     #[test]
@@ -383,5 +384,24 @@ mod tests {
             }),
             get_number(row, col, grid_width, &grid)
         );
+    }
+
+    #[test]
+    fn gear_ratio_accumulator_test() {
+        let grid = vec![
+            vec!['1', '2', '3', '.'],
+            vec!['.', '*', '.', '.'],
+            vec!['.', '4', '5', '6'],
+        ];
+        assert_eq!(56088, gear_ratio_accumulator(&grid));
+
+        let grid = vec![
+            vec!['1', '2', '3', '.'],
+            vec!['.', '*', '.', '.'],
+            vec!['.', '4', '5', '6'],
+            vec!['.', '.', '.', '.'],
+            vec!['*', '4', '5', '6'],
+        ];
+        assert_eq!(56088, gear_ratio_accumulator(&grid));
     }
 }
