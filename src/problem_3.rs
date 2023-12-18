@@ -35,9 +35,9 @@ fn part_number_accumulator(grid: Vec<Vec<char>>) -> i32 {
     for row in 0..grid_height {
         let mut col = 0;
         while col < grid_width {
-            if let Some(number_string) = part_number(row, col, grid_height, grid_width, &grid) {
-                col += number_string.len();
-                let part_number: i32 = number_string.parse().unwrap();
+            if let Some(part_number) = get_part_number(row, col, grid_height, grid_width, &grid) {
+                col += part_number.number_string.len();
+                let part_number: i32 = part_number.number_string.parse().unwrap();
                 part_number_sum += part_number;
             } else {
                 col += 1;
@@ -48,20 +48,24 @@ fn part_number_accumulator(grid: Vec<Vec<char>>) -> i32 {
     part_number_sum
 }
 
-fn part_number(
+fn get_part_number(
     row: usize,
     col: usize,
     grid_height: usize,
     grid_width: usize,
     grid: &Vec<Vec<char>>,
-) -> Option<String> {
+) -> Option<PartNumber> {
     let character = grid[row][col];
     if character.is_ascii_digit() {
         let length = length_of_number(row, col, grid_width, &grid);
         if has_symbol_neighbour(row, col, length, grid_height, grid_width, &grid) {
             let number_chars = &grid[row][col..col + length];
             let number_string: String = number_chars.iter().collect();
-            return Some(number_string);
+            return Some(PartNumber {
+                number_string,
+                row,
+                col,
+            });
         }
     }
 
@@ -118,6 +122,12 @@ fn has_symbol_neighbour(
 fn is_symbol(c: char) -> bool {
     let symbols = "!@#$%^&*()<>?/|-=+_[]{}";
     symbols.contains(c)
+}
+
+struct PartNumber {
+    number_string: String,
+    row: usize,
+    col: usize,
 }
 
 // PART 2
