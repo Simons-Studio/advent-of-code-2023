@@ -66,10 +66,12 @@ fn get_part_number(
                 number_string,
                 position,
             });
+        } else {
+            None
         }
+    } else {
+        None
     }
-
-    None
 }
 
 fn length_of_number(row: usize, col: usize, grid_width: usize, grid: &Vec<Vec<char>>) -> usize {
@@ -109,7 +111,6 @@ fn has_symbol_neighbour(
     for check_row in min_row..max_row {
         for check_col in min_col..max_col {
             let neighbour = grid[check_row][check_col];
-            print!("{neighbour}");
             if is_symbol(neighbour) {
                 return true;
             }
@@ -135,14 +136,13 @@ struct Position {
 }
 
 // PART 2
-
-fn numbers_adjacent_to_star(
+fn numbers_adjacent_to_gear(
     row: usize,
     col: usize,
     grid_height: usize,
     grid_width: usize,
     grid: &Vec<Vec<char>>,
-) -> bool {
+) -> Vec<i32> {
     // Set bounds
     let min_row = if row == 0 { 0 } else { row - 1 };
     let min_col = if col == 0 { 0 } else { col - 1 };
@@ -157,7 +157,18 @@ fn numbers_adjacent_to_star(
         col + 2
     };
 
-    false
+    let mut gear_numbers: Vec<i32> = Vec::new();
+
+    for check_row in min_row..max_row {
+        for check_col in min_col..max_col {
+            if let Some(gear_number) = get_number(check_row, check_col, grid_width, grid) {
+                let number: i32 = gear_number.number_string.parse().unwrap();
+                gear_numbers.push(number);
+            }
+        }
+    }
+
+    gear_numbers
 }
 
 fn get_number(
