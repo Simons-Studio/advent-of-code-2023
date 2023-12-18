@@ -4,9 +4,11 @@ pub fn problem_3() -> Result<(), Box<dyn Error>> {
     let file_path = "./res/03/input";
     let contents = fs::read_to_string(file_path)?;
     let grid = create_engine_grid(contents);
-    let part_number_sum = part_number_accumulator(grid);
+    let part_number_sum = part_number_accumulator(&grid);
+    let gear_ratio_sum = gear_ratio_accumulator(&grid);
 
     println!("The sum of all the part numbers is: {}", part_number_sum);
+    println!("The sum of all the gear ratios is: {}", gear_ratio_sum);
 
     Ok(())
 }
@@ -22,7 +24,7 @@ fn create_engine_grid(input: String) -> Vec<Vec<char>> {
     rows
 }
 
-fn part_number_accumulator(grid: Vec<Vec<char>>) -> i32 {
+fn part_number_accumulator(grid: &Vec<Vec<char>>) -> i32 {
     if grid.len() <= 0 {
         panic!("Grid too short");
     }
@@ -136,6 +138,47 @@ struct Position {
 }
 
 // PART 2
+fn gear_ratio_accumulator(grid: &Vec<Vec<char>>) -> i32 {
+    if grid.len() <= 0 {
+        panic!("Grid too short");
+    }
+
+    let mut gear_ratio_sum = 0;
+
+    let grid_height = grid.len();
+    let grid_width = grid[0].len();
+
+    for row in 0..grid_height {
+        for col in 0..grid_width {
+            let c = grid[row][col];
+            if is_gear(c) {
+                gear_ratio_sum += get_gear_ratio(row, col, grid_height, grid_width, grid);
+            }
+        }
+    }
+
+    gear_ratio_sum
+}
+
+fn get_gear_ratio(
+    row: usize,
+    col: usize,
+    grid_height: usize,
+    grid_width: usize,
+    grid: &Vec<Vec<char>>,
+) -> i32 {
+    let numbers = numbers_adjacent_to_gear(row, col, grid_height, grid_width, grid);
+    if numbers.len() > 0 {
+        let mut ratio = 1;
+        for n in numbers {
+            ratio *= n;
+        }
+        ratio
+    } else {
+        0
+    }
+}
+
 fn is_gear(c: char) -> bool {
     c == '*'
 }
@@ -216,7 +259,7 @@ fn get_number(
 
 #[cfg(test)]
 mod tests {
-    use crate::problem_3::has_symbol_neighbour;
+    use crate::problem_3::{has_symbol_neighbour, numbers_adjacent_to_gear};
 
     #[test]
     fn has_symbol_neighbour_test() {
