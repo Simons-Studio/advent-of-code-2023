@@ -170,7 +170,7 @@ fn get_gear_ratio(
     grid: &Vec<Vec<char>>,
 ) -> i32 {
     let numbers = numbers_adjacent_to_gear(row, col, grid_height, grid_width, grid);
-    if numbers.len() > 0 {
+    if numbers.len() == 2 {
         let mut ratio = 1;
         for n in numbers {
             ratio *= n;
