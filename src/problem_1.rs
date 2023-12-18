@@ -24,8 +24,6 @@ pub fn problem_1() -> Result<(), Box<dyn Error>> {
             calibration_value += digit;
         }
 
-        print!("{}, ", calibration_value);
-
         calibration_sum += calibration_value;
     }
 
