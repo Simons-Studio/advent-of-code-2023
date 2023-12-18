@@ -136,6 +136,10 @@ struct Position {
 }
 
 // PART 2
+fn is_gear(c: char) -> bool {
+    c == '*'
+}
+
 fn numbers_adjacent_to_gear(
     row: usize,
     col: usize,
