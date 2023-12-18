@@ -322,4 +322,22 @@ mod tests {
             &grid
         ));
     }
+
+    #[test]
+    fn numbers_adjacent_to_gear_test() {
+        let row = 1;
+        let col = 1;
+        let grid_height = 3;
+        let grid_width = 4;
+        let grid = vec![
+            vec!['1', '2', '3', '.'],
+            vec!['.', '*', '.', '.'],
+            vec!['.', '4', '5', '6'],
+        ];
+        let gears = vec![123, 456];
+        assert_eq!(
+            gears,
+            numbers_adjacent_to_gear(row, col, grid_height, grid_width, &grid)
+        );
+    }
 }
