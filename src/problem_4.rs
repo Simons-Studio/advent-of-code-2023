@@ -35,7 +35,19 @@ fn winning_points_accumulator(input: String) -> i32 {
     game_point_sum
 }
 
-fn point_score(wins: Vec<i32>, recieved: Vec<i32>) -> i32 {}
+fn point_score(wins: Vec<i32>, recieved: Vec<i32>) -> i32 {
+    let mut score = 0;
+    for w in wins {
+        if recieved.contains(&w) {
+            if score == 0 {
+                score = 1;
+            } else {
+                score *= 2;
+            }
+        }
+    }
+    score
+}
 
 fn get_numbers(number_list_string: &str) -> Vec<i32> {
     let number_strings = number_list_string.split_ascii_whitespace();
