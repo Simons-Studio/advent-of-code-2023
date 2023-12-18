@@ -3,6 +3,12 @@ use std::{error::Error, fs};
 pub fn problem_4() -> Result<(), Box<dyn Error>> {
     let file_path = "./res/04/input";
     let contents = fs::read_to_string(file_path)?;
+    let total_score = winning_points_accumulator(contents);
+
+    println!(
+        "The total winning score for all the games is {}",
+        total_score
+    );
 
     Ok(())
 }
