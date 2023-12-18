@@ -127,11 +127,13 @@ fn is_symbol(c: char) -> bool {
     symbols.contains(c)
 }
 
+#[derive(PartialEq, Eq, PartialOrd, Ord, Debug)]
 struct PartNumber {
     number_string: String,
     position: Position,
 }
 
+#[derive(PartialEq, Eq, PartialOrd, Ord, Debug)]
 struct Position {
     row: usize,
     col: usize,
@@ -207,10 +209,15 @@ fn numbers_adjacent_to_gear(
     let mut gear_numbers: Vec<i32> = Vec::new();
 
     for check_row in min_row..max_row {
-        for check_col in min_col..max_col {
+        let mut check_col = min_col;
+        while check_col >= min_col && check_col < max_col {
             if let Some(gear_number) = get_number(check_row, check_col, grid_width, grid) {
                 let number: i32 = gear_number.number_string.parse().unwrap();
                 gear_numbers.push(number);
+
+                check_col = gear_number.position.col + gear_number.number_string.len();
+            } else {
+                check_col += 1;
             }
         }
     }
@@ -259,7 +266,9 @@ fn get_number(
 
 #[cfg(test)]
 mod tests {
-    use crate::problem_3::{has_symbol_neighbour, numbers_adjacent_to_gear};
+    use crate::problem_3::{
+        get_number, has_symbol_neighbour, numbers_adjacent_to_gear, PartNumber, Position,
+    };
 
     #[test]
     fn has_symbol_neighbour_test() {
@@ -338,6 +347,41 @@ mod tests {
         assert_eq!(
             gears,
             numbers_adjacent_to_gear(row, col, grid_height, grid_width, &grid)
+        );
+    }
+
+    #[test]
+    fn get_number_test() {
+        let row = 0;
+        let col = 1;
+        let grid_width = 4;
+        let grid = vec![
+            vec!['1', '2', '3', '.'],
+            vec!['.', '*', '.', '.'],
+            vec!['.', '4', '5', '6'],
+        ];
+        assert_eq!(
+            Some(PartNumber {
+                number_string: String::from("123"),
+                position: Position { row: 0, col: 0 }
+            }),
+            get_number(row, col, grid_width, &grid)
+        );
+
+        let row = 2;
+        let col = 3;
+        let grid_width = 4;
+        let grid = vec![
+            vec!['1', '2', '3', '.'],
+            vec!['.', '*', '.', '.'],
+            vec!['.', '4', '5', '6'],
+        ];
+        assert_eq!(
+            Some(PartNumber {
+                number_string: String::from("456"),
+                position: Position { row: 2, col: 1 }
+            }),
+            get_number(row, col, grid_width, &grid)
         );
     }
 }
