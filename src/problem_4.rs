@@ -14,31 +14,31 @@ pub fn problem_4() -> Result<(), Box<dyn Error>> {
 }
 
 fn winning_points_accumulator(input: String) -> i32 {
-    /* // TODO
-     * Remove card number
-     * Split winning numbers from received numbers
-     * Check how many are contained
-     */
     let mut game_point_sum = 0;
 
-    for line in input.lines() {
-        let card_no_and_lists = line.split_once(':');
-        let wins_and_recieved = if let Some((_, numbers)) = card_no_and_lists {
-            numbers.split_once('|')
-        } else {
-            None
-        };
-        let game_points = if let Some((wins_str, recieved_str)) = wins_and_recieved {
-            let wins = get_numbers(wins_str);
-            let recieved = get_numbers(recieved_str);
-            point_score(wins, recieved)
-        } else {
-            0
-        };
-        game_point_sum += game_points;
+    for game in input.lines() {
+        if let Some((wins, recieved)) = get_game_values(game) {
+            game_point_sum += point_score(wins, recieved);
+        }
     }
 
     game_point_sum
+}
+
+fn get_game_values(game: &str) -> Option<(Vec<i32>, Vec<i32>)> {
+    let card_no_and_lists = game.split_once(':');
+    let wins_and_recieved = if let Some((_, numbers)) = card_no_and_lists {
+        numbers.split_once('|')
+    } else {
+        None
+    };
+    if let Some((wins_str, recieved_str)) = wins_and_recieved {
+        let wins = get_numbers(wins_str);
+        let recieved = get_numbers(recieved_str);
+        Some((wins, recieved))
+    } else {
+        None
+    }
 }
 
 fn point_score(wins: Vec<i32>, recieved: Vec<i32>) -> i32 {
@@ -63,6 +63,26 @@ fn get_numbers(number_list_string: &str) -> Vec<i32> {
         numbers.push(number);
     }
     numbers
+}
+
+// PART 2
+
+fn assign_number_of_wins(input: String) -> Vec<i32> {
+    let mut win_vector: Vec<i32> = Vec::new();
+
+    for line in input.lines() {}
+
+    win_vector
+}
+
+fn number_of_wins(wins: Vec<i32>, recieved: Vec<i32>) -> i32 {
+    let mut number_wins = 0;
+    for w in wins {
+        if recieved.contains(&w) {
+            number_wins += 1;
+        }
+    }
+    number_wins
 }
 
 #[cfg(test)]
