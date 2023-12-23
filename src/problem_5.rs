@@ -3,7 +3,7 @@
  * 2. Create a function that can read the contents of the files into the struct
  */
 
-use std::{error::Error, fs, ops::Range};
+use std::{error::Error, fs};
 
 use crate::common_ops;
 
@@ -11,7 +11,7 @@ pub fn problem_5() -> Result<(), Box<dyn Error>> {
     let file_path = "./res/05/input";
     let contents = fs::read_to_string(file_path)?;
 
-    let Some(locations) = find_locations(contents) else {
+    let Some(locations) = find_locations(&contents) else {
         // TODO: Create a proper error
         return Err("An error".into());
     };
@@ -22,10 +22,21 @@ pub fn problem_5() -> Result<(), Box<dyn Error>> {
         None => println!("No Locations"),
     }
 
+    let Some(locations) = find_locations_ranges(&contents) else {
+        // TODO: Create a proper error
+        return Err("An error".into());
+    };
+
+    let low_location = locations.iter().min();
+    match low_location {
+        Some(location) => println!("The lowest location using seed ranges: {}", location),
+        None => println!("No Locations"),
+    }
+
     Ok(())
 }
 
-fn find_locations(input: String) -> Option<Vec<i64>> {
+fn find_locations(input: &String) -> Option<Vec<i64>> {
     let mut sections = input.split("\n\n");
     let Some(seeds_str) = sections.next() else {
         return None;
@@ -156,7 +167,7 @@ impl MapElement {
 
 // PART 2
 
-fn find_locations_ranges(input: String) -> Option<Vec<i64>> {
+fn find_locations_ranges(input: &String) -> Option<Vec<i64>> {
     let mut sections = input.split("\n\n");
     let Some(seeds_str) = sections.next() else {
         return None;
