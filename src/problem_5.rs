@@ -28,6 +28,10 @@ fn top_level_function(input: String) {
     let categories = create_categories(sections.collect());
 }
 
+fn category_transform(seeds: Vec<i32>, category: CategoryMap) -> Vec<i32> {
+    seeds.iter().map(|x| category.transform(*x)).collect()
+}
+
 fn collect_seeds(seeds_str: &str) -> Option<Vec<i32>> {
     if let Some(numbers_str) = seeds_str.strip_prefix("seeds: ") {
         Some(common_ops::get_numbers(numbers_str))
