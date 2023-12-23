@@ -1,5 +1,7 @@
 use std::{collections::HashMap, error::Error, fs};
 
+use crate::common_ops;
+
 pub fn problem_4() -> Result<(), Box<dyn Error>> {
     let file_path = "./res/04/input";
     let contents = fs::read_to_string(file_path)?;
@@ -44,8 +46,8 @@ fn get_game_values(game: &str) -> Option<Game> {
 
         if let Some(card_no) = card_no_option {
             if let Some((wins_str, recieved_str)) = wins_and_recieved_str {
-                let wins = get_numbers(wins_str);
-                let recieved = get_numbers(recieved_str);
+                let wins = common_ops::get_numbers(wins_str);
+                let recieved = common_ops::get_numbers(recieved_str);
                 Some(Game {
                     card_no,
                     wins,
@@ -83,16 +85,6 @@ fn point_score(game: Game) -> i32 {
         }
     }
     score
-}
-
-fn get_numbers(number_list_string: &str) -> Vec<i32> {
-    let number_strings = number_list_string.split_ascii_whitespace();
-    let mut numbers = Vec::new();
-    for number_str in number_strings {
-        let number: i32 = number_str.parse().unwrap();
-        numbers.push(number);
-    }
-    numbers
 }
 
 // PART 2
@@ -149,7 +141,7 @@ mod tests {
         assign_number_of_copies, get_game_values, number_of_cards, number_of_wins, point_score,
     };
 
-    use super::{get_numbers, winning_points_accumulator, Game};
+    use super::{common_ops::get_numbers, winning_points_accumulator, Game};
 
     #[test]
     fn winning_points_accumulator_test() {

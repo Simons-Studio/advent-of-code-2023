@@ -5,6 +5,7 @@
 // 4. Produce number with first and last digit
 // 5. Sum all the created numbers
 
+mod common_ops;
 mod problem_1;
 mod problem_2;
 mod problem_3;
