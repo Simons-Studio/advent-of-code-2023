@@ -141,7 +141,7 @@ mod tests {
         assign_number_of_copies, get_game_values, number_of_cards, number_of_wins, point_score,
     };
 
-    use super::{common_ops::get_numbers, winning_points_accumulator, Game};
+    use super::{winning_points_accumulator, Game};
 
     #[test]
     fn winning_points_accumulator_test() {
@@ -168,13 +168,6 @@ Card 6: 31 18 13 56 72 | 74 77 10 23 35 67 36 11";
                 recieved
             })
         );
-    }
-
-    #[test]
-    fn get_numbers_test() {
-        let numbers_list_string = "12 23  2 12 32  6 34 97 67";
-        let numbers_list = vec![12, 23, 2, 12, 32, 6, 34, 97, 67];
-        assert_eq!(get_numbers(numbers_list_string), numbers_list);
     }
 
     #[test]
