@@ -53,7 +53,7 @@ fn create_category_map(category_str: &str) -> Option<CategoryMap> {
     };
     let name = sanitize_name(name);
 
-    let maps = create_source_maps(lines.collect());
+    let maps = create_map_element_list(lines.collect());
 
     Some(CategoryMap { name, maps })
 }
@@ -67,33 +67,33 @@ fn sanitize_name(dirty_name: &str) -> String {
     String::from(name)
 }
 
-fn create_source_maps(input: Vec<&str>) -> Vec<SourceToDestinationMap> {
-    let mut maps: Vec<SourceToDestinationMap> = Vec::new();
-    for line in input {
-        if let Some(map) = create_source_map(line) {
+fn create_map_element_list(numbers_string_list: Vec<&str>) -> Vec<MapElement> {
+    let mut maps: Vec<MapElement> = Vec::new();
+    for line in numbers_string_list {
+        if let Some(map) = create_map_element(line) {
             maps.push(map);
         }
     }
     maps
 }
 
-fn create_source_map(input: &str) -> Option<SourceToDestinationMap> {
-    let numbers = common_ops::get_numbers(input);
+fn create_map_element(numbers_str: &str) -> Option<MapElement> {
+    let numbers = common_ops::get_numbers(numbers_str);
     if numbers.len() == 3 {
         let destination_range_start = numbers[0];
         let source_range_start = numbers[1];
         let range = numbers[2];
-        let map = SourceToDestinationMap::new(destination_range_start, source_range_start, range);
+        let map = MapElement::new(destination_range_start, source_range_start, range);
         Some(map)
     } else {
         None
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Eq)]
 struct CategoryMap {
     name: String,
-    maps: Vec<SourceToDestinationMap>,
+    maps: Vec<MapElement>,
 }
 impl CategoryMap {
     fn transform(&self, source: i32) -> i32 {
@@ -106,21 +106,17 @@ impl CategoryMap {
     }
 }
 
-#[derive(Debug)]
-struct SourceToDestinationMap {
+#[derive(Debug, PartialEq, Eq)]
+struct MapElement {
     destination_range_start: i32,
     source_range_start: i32,
     range: i32,
     source_to_destination_difference: i32,
 }
-impl SourceToDestinationMap {
-    fn new(
-        destination_range_start: i32,
-        source_range_start: i32,
-        range: i32,
-    ) -> SourceToDestinationMap {
+impl MapElement {
+    fn new(destination_range_start: i32, source_range_start: i32, range: i32) -> MapElement {
         let source_to_destination_difference = destination_range_start - source_range_start;
-        SourceToDestinationMap {
+        MapElement {
             destination_range_start,
             source_range_start,
             range,
@@ -143,17 +139,21 @@ impl SourceToDestinationMap {
 
 #[cfg(test)]
 mod tests {
-    //     use super::CategoryMap;
+    use crate::problem_5::create_category_map;
 
-    //     #[test]
-    //     fn test_create_category_map() {
-    //         let example = "seed-to-soil map:
-    // 50 98 2
-    // 52 50 48";
-    //         let
-    //         let category = CategoryMap {
-    //             name: String::from("seed-to-soil"),
-    //             vec![]
-    //         }
-    //     }
+    use super::{create_map_element, CategoryMap, MapElement};
+
+    #[test]
+    fn test_create_category_map() {
+        let example = "seed-to-soil map:
+    50 98 2
+    52 50 48";
+        let map_element_1 = MapElement::new(50, 98, 2);
+        let map_element_2 = MapElement::new(52, 50, 48);
+        let category = CategoryMap {
+            name: String::from("seed-to-soil"),
+            maps: vec![map_element_1, map_element_2],
+        };
+        assert_eq!(Some(category), create_category_map(example));
+    }
 }
