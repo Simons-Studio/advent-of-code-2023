@@ -21,12 +21,12 @@ pub fn problem_4() -> Result<(), Box<dyn Error>> {
 
 #[derive(PartialEq, Eq, Debug)]
 struct Game {
-    card_no: i32,
-    wins: Vec<i32>,
-    recieved: Vec<i32>,
+    card_no: i64,
+    wins: Vec<i64>,
+    recieved: Vec<i64>,
 }
 
-fn winning_points_accumulator(input: &String) -> i32 {
+fn winning_points_accumulator(input: &String) -> i64 {
     let mut game_point_sum = 0;
 
     for game_str in input.lines() {
@@ -64,16 +64,16 @@ fn get_game_values(game: &str) -> Option<Game> {
     }
 }
 
-fn get_card_no(card_no_str: &str) -> Option<i32> {
+fn get_card_no(card_no_str: &str) -> Option<i64> {
     if let Some(stripped) = card_no_str.strip_prefix("Card") {
-        let card_no: i32 = stripped.trim().parse().unwrap();
+        let card_no: i64 = stripped.trim().parse().unwrap();
         Some(card_no)
     } else {
         None
     }
 }
 
-fn point_score(game: Game) -> i32 {
+fn point_score(game: Game) -> i64 {
     let mut score = 0;
     for w in game.wins {
         if game.recieved.contains(&w) {
@@ -88,7 +88,7 @@ fn point_score(game: Game) -> i32 {
 }
 
 // PART 2
-fn number_of_cards(input: &String) -> i32 {
+fn number_of_cards(input: &String) -> i64 {
     let card_copies = assign_number_of_copies(input);
     let mut number_of_cards = 0;
     for (_, copies) in card_copies {
@@ -97,8 +97,8 @@ fn number_of_cards(input: &String) -> i32 {
     number_of_cards
 }
 
-fn assign_number_of_copies(input: &String) -> HashMap<i32, i32> {
-    let mut card_copies: HashMap<i32, i32> = HashMap::new();
+fn assign_number_of_copies(input: &String) -> HashMap<i64, i64> {
+    let mut card_copies: HashMap<i64, i64> = HashMap::new();
 
     for line in input.lines() {
         let Some(game) = get_game_values(line) else {
@@ -123,7 +123,7 @@ fn assign_number_of_copies(input: &String) -> HashMap<i32, i32> {
     card_copies
 }
 
-fn number_of_wins(game: Game) -> i32 {
+fn number_of_wins(game: Game) -> i64 {
     let mut number_wins = 0;
     for w in game.wins {
         if game.recieved.contains(&w) {

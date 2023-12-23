@@ -25,7 +25,7 @@ pub fn problem_5() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-fn find_locations(input: String) -> Option<Vec<i32>> {
+fn find_locations(input: String) -> Option<Vec<i64>> {
     let mut sections = input.split("\n\n");
     let Some(seeds_str) = sections.next() else {
         return None;
@@ -41,11 +41,11 @@ fn find_locations(input: String) -> Option<Vec<i32>> {
     Some(seeds)
 }
 
-fn category_transform(seeds: Vec<i32>, category: CategoryMap) -> Vec<i32> {
+fn category_transform(seeds: Vec<i64>, category: CategoryMap) -> Vec<i64> {
     seeds.iter().map(|x| category.transform(*x)).collect()
 }
 
-fn collect_seeds(seeds_str: &str) -> Option<Vec<i32>> {
+fn collect_seeds(seeds_str: &str) -> Option<Vec<i64>> {
     if let Some(numbers_str) = seeds_str.strip_prefix("seeds: ") {
         Some(common_ops::get_numbers(numbers_str))
     } else {
@@ -113,7 +113,7 @@ struct CategoryMap {
     maps: Vec<MapElement>,
 }
 impl CategoryMap {
-    fn transform(&self, source: i32) -> i32 {
+    fn transform(&self, source: i64) -> i64 {
         for map in &self.maps {
             if let Some(result) = map.transform(source) {
                 return result;
@@ -125,13 +125,13 @@ impl CategoryMap {
 
 #[derive(Debug, PartialEq, Eq)]
 struct MapElement {
-    destination_range_start: i32,
-    source_range_start: i32,
-    range: i32,
-    source_to_destination_difference: i32,
+    destination_range_start: i64,
+    source_range_start: i64,
+    range: i64,
+    source_to_destination_difference: i64,
 }
 impl MapElement {
-    fn new(destination_range_start: i32, source_range_start: i32, range: i32) -> MapElement {
+    fn new(destination_range_start: i64, source_range_start: i64, range: i64) -> MapElement {
         let source_to_destination_difference = destination_range_start - source_range_start;
         MapElement {
             destination_range_start,
@@ -141,11 +141,11 @@ impl MapElement {
         }
     }
 
-    fn in_source_range(&self, source: i32) -> bool {
+    fn in_source_range(&self, source: i64) -> bool {
         source >= self.source_range_start && source < self.source_range_start + self.range
     }
 
-    fn transform(&self, source: i32) -> Option<i32> {
+    fn transform(&self, source: i64) -> Option<i64> {
         if self.in_source_range(source) {
             Some(source + self.source_to_destination_difference)
         } else {
