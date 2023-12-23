@@ -15,28 +15,44 @@ mod problem_5;
 use std::process;
 
 fn main() {
-    if let Err(e) = problem_1::problem_1() {
-        println!("Application Error: {e}");
-        process::exit(1);
-    }
+    let selector = 5;
 
-    if let Err(e) = problem_2::problem_2() {
-        println!("Application Error: {e}");
-        process::exit(1);
-    }
+    match selector {
+        1 => {
+            if let Err(e) = problem_1::problem_1() {
+                println!("Application Error: {e}");
+                process::exit(1);
+            }
+        }
 
-    if let Err(e) = problem_3::problem_3() {
-        println!("Application Error: {e}");
-        process::exit(1);
-    }
+        2 => {
+            if let Err(e) = problem_2::problem_2() {
+                println!("Application Error: {e}");
+                process::exit(1);
+            }
+        }
 
-    if let Err(e) = problem_4::problem_4() {
-        println!("Application Error: {e}");
-        process::exit(1);
-    }
+        3 => {
+            if let Err(e) = problem_3::problem_3() {
+                println!("Application Error: {e}");
+                process::exit(1);
+            }
+        }
 
-    if let Err(e) = problem_5::problem_5() {
-        println!("Application Error: {e}");
-        process::exit(1);
+        4 => {
+            if let Err(e) = problem_4::problem_4() {
+                println!("Application Error: {e}");
+                process::exit(1);
+            }
+        }
+
+        5 => {
+            if let Err(e) = problem_5::problem_5() {
+                println!("Application Error: {e}");
+                process::exit(1);
+            }
+        }
+
+        _ => {}
     }
 }
