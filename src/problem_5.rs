@@ -3,7 +3,9 @@
  * 2. Create a function that can read the contents of the files into the struct
  */
 
-use std::{error::Error, fs};
+use std::{error::Error, fs, slice::range};
+
+use crate::common_ops;
 
 pub fn problem_5() -> Result<(), Box<dyn Error>> {
     let file_path = "./res/05/input";
@@ -11,11 +13,45 @@ pub fn problem_5() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
+fn create_category(category_str: String) -> Option<CategoryMap<'static>> {
+    let mut maps: Vec<SourceToDestinationMap> = Vec::new();
+
+    let mut lines = category_str.lines();
+    let Some(name) = lines.next() else {
+        return None;
+    };
+
+    let name = sanitize_name(name);
+
+    for line in lines {
+        let numbers = common_ops::get_numbers(line);
+        if numbers.len() == 3 {
+            let destination_range_start = numbers[0];
+            let source_range_start = numbers[1];
+            let range = numbers[2];
+            let map =
+                SourceToDestinationMap::new(destination_range_start, source_range_start, range);
+            maps.push(map);
+        }
+    }
+
+    Some(CategoryMap { name, maps })
+}
+
+fn sanitize_name(dirty_name: &str) -> &str {
+    if let Some(name) = dirty_name.strip_suffix(" map:") {
+        name
+    } else {
+        dirty_name
+    }
+}
+
 #[derive(Debug)]
-struct CategoryMap {
+struct CategoryMap<'a> {
+    name: &'a str,
     maps: Vec<SourceToDestinationMap>,
 }
-impl CategoryMap {
+impl CategoryMap<'_> {
     fn transform(&self, source: i32) -> i32 {
         for map in &self.maps {
             if let Some(result) = map.transform(source) {
