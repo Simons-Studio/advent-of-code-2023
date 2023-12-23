@@ -3,7 +3,7 @@
  * 2. Create a function that can read the contents of the files into the struct
  */
 
-use std::{error::Error, fs};
+use std::{error::Error, fs, ops::Range};
 
 use crate::common_ops;
 
@@ -152,6 +152,46 @@ impl MapElement {
             None
         }
     }
+}
+
+// PART 2
+
+fn find_locations_ranges(input: String) -> Option<Vec<i64>> {
+    let mut sections = input.split("\n\n");
+    let Some(seeds_str) = sections.next() else {
+        return None;
+    };
+    let Some(mut seeds) = collect_seed_ranges(seeds_str) else {
+        return None;
+    };
+    let categories = create_categories(sections.collect());
+
+    for category in categories {
+        seeds = category_transform(seeds, category);
+    }
+    Some(seeds)
+}
+
+fn collect_seed_ranges(seeds_str: &str) -> Option<Vec<i64>> {
+    if let Some(numbers_str) = seeds_str.strip_prefix("seeds: ") {
+        let numbers = common_ops::get_numbers(numbers_str);
+        Some(create_seed_ranges(numbers))
+    } else {
+        None
+    }
+}
+
+fn create_seed_ranges(numbers: Vec<i64>) -> Vec<i64> {
+    let mut seeds: Vec<i64> = Vec::new();
+    let mut num_iter = numbers.iter();
+    while let (Some(start), Some(range)) = (num_iter.next(), num_iter.next()) {
+        seeds.append(&mut seed_range(*start, *range));
+    }
+    seeds
+}
+
+fn seed_range(start: i64, range: i64) -> Vec<i64> {
+    (start..start + range).collect()
 }
 
 #[cfg(test)]
