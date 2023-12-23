@@ -10,10 +10,43 @@ use crate::common_ops;
 pub fn problem_5() -> Result<(), Box<dyn Error>> {
     let file_path = "./res/05/input";
     let contents = fs::read_to_string(file_path)?;
+
+    top_level_function(contents);
+
     Ok(())
 }
 
-fn create_category(category_str: String) -> Option<CategoryMap> {
+// TODO: Rename this function
+fn top_level_function(input: String) {
+    let mut sections = input.split("\n\n");
+    let Some(seeds_str) = sections.next() else {
+        return;
+    };
+    let Some(seeds) = collect_seeds(seeds_str) else {
+        return;
+    };
+    let categories = create_categories(sections.collect());
+}
+
+fn collect_seeds(seeds_str: &str) -> Option<Vec<i32>> {
+    if let Some(numbers_str) = seeds_str.strip_prefix("seeds: ") {
+        Some(common_ops::get_numbers(numbers_str))
+    } else {
+        None
+    }
+}
+
+fn create_categories(sections: Vec<&str>) -> Vec<CategoryMap> {
+    let mut category_maps: Vec<CategoryMap> = Vec::new();
+    for section in sections {
+        if let Some(category) = create_category_map(section) {
+            category_maps.push(category);
+        }
+    }
+    category_maps
+}
+
+fn create_category_map(category_str: &str) -> Option<CategoryMap> {
     let mut maps: Vec<SourceToDestinationMap> = Vec::new();
 
     let mut lines = category_str.lines();
@@ -95,4 +128,12 @@ impl SourceToDestinationMap {
             None
         }
     }
+}
+
+#[cfg(test)]
+mod tests {
+    // #[test]
+    // fn test_create_categories {
+
+    // }
 }
