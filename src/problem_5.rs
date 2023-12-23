@@ -11,21 +11,34 @@ pub fn problem_5() -> Result<(), Box<dyn Error>> {
     let file_path = "./res/05/input";
     let contents = fs::read_to_string(file_path)?;
 
-    top_level_function(contents);
+    let Some(locations) = find_locations(contents) else {
+        // TODO: Create a proper error
+        return Err("An error".into());
+    };
+
+    let low_location = locations.iter().min();
+    match low_location {
+        Some(location) => println!("The lowest location: {}", location),
+        None => println!("No Locations"),
+    }
 
     Ok(())
 }
 
-// TODO: Rename this function
-fn top_level_function(input: String) {
+fn find_locations(input: String) -> Option<Vec<i32>> {
     let mut sections = input.split("\n\n");
     let Some(seeds_str) = sections.next() else {
-        return;
+        return None;
     };
-    let Some(seeds) = collect_seeds(seeds_str) else {
-        return;
+    let Some(mut seeds) = collect_seeds(seeds_str) else {
+        return None;
     };
     let categories = create_categories(sections.collect());
+
+    for category in categories {
+        seeds = category_transform(seeds, category);
+    }
+    Some(seeds)
 }
 
 fn category_transform(seeds: Vec<i32>, category: CategoryMap) -> Vec<i32> {
@@ -143,9 +156,9 @@ impl MapElement {
 
 #[cfg(test)]
 mod tests {
-    use crate::problem_5::{category_transform, create_category_map};
+    use crate::problem_5::{category_transform, collect_seeds, create_category_map};
 
-    use super::{collect_seeds, create_map_element, CategoryMap, MapElement};
+    use super::{CategoryMap, MapElement};
 
     #[test]
     fn test_create_category_map() {
@@ -173,5 +186,12 @@ mod tests {
 
         let soils = vec![81, 14, 57, 13];
         assert_eq!(soils, category_transform(seeds, category));
+    }
+
+    #[test]
+    fn test_collect_seeds() {
+        let seeds = vec![79, 14, 55, 13];
+        let seeds_str = "seeds: 79 14 55 13";
+        assert_eq!(Some(seeds), collect_seeds(seeds_str));
     }
 }
