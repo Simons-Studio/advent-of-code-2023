@@ -3,7 +3,7 @@
  * 2. Create a function that can read the contents of the files into the struct
  */
 
-use std::{error::Error, fs, slice::range};
+use std::{error::Error, fs};
 
 use crate::common_ops;
 
