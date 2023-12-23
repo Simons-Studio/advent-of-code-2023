@@ -13,14 +13,13 @@ pub fn problem_5() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-fn create_category(category_str: String) -> Option<CategoryMap<'static>> {
+fn create_category(category_str: String) -> Option<CategoryMap> {
     let mut maps: Vec<SourceToDestinationMap> = Vec::new();
 
     let mut lines = category_str.lines();
     let Some(name) = lines.next() else {
         return None;
     };
-
     let name = sanitize_name(name);
 
     for line in lines {
@@ -38,20 +37,21 @@ fn create_category(category_str: String) -> Option<CategoryMap<'static>> {
     Some(CategoryMap { name, maps })
 }
 
-fn sanitize_name(dirty_name: &str) -> &str {
-    if let Some(name) = dirty_name.strip_suffix(" map:") {
+fn sanitize_name(dirty_name: &str) -> String {
+    let name = if let Some(name) = dirty_name.strip_suffix(" map:") {
         name
     } else {
         dirty_name
-    }
+    };
+    String::from(name)
 }
 
 #[derive(Debug)]
-struct CategoryMap<'a> {
-    name: &'a str,
+struct CategoryMap {
+    name: String,
     maps: Vec<SourceToDestinationMap>,
 }
-impl CategoryMap<'_> {
+impl CategoryMap {
     fn transform(&self, source: i32) -> i32 {
         for map in &self.maps {
             if let Some(result) = map.transform(source) {
