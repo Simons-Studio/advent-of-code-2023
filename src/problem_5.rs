@@ -47,25 +47,13 @@ fn create_categories(sections: Vec<&str>) -> Vec<CategoryMap> {
 }
 
 fn create_category_map(category_str: &str) -> Option<CategoryMap> {
-    let mut maps: Vec<SourceToDestinationMap> = Vec::new();
-
     let mut lines = category_str.lines();
     let Some(name) = lines.next() else {
         return None;
     };
     let name = sanitize_name(name);
 
-    for line in lines {
-        let numbers = common_ops::get_numbers(line);
-        if numbers.len() == 3 {
-            let destination_range_start = numbers[0];
-            let source_range_start = numbers[1];
-            let range = numbers[2];
-            let map =
-                SourceToDestinationMap::new(destination_range_start, source_range_start, range);
-            maps.push(map);
-        }
-    }
+    let maps = create_source_maps(lines.collect());
 
     Some(CategoryMap { name, maps })
 }
@@ -77,6 +65,29 @@ fn sanitize_name(dirty_name: &str) -> String {
         dirty_name
     };
     String::from(name)
+}
+
+fn create_source_maps(input: Vec<&str>) -> Vec<SourceToDestinationMap> {
+    let mut maps: Vec<SourceToDestinationMap> = Vec::new();
+    for line in input {
+        if let Some(map) = create_source_map(line) {
+            maps.push(map);
+        }
+    }
+    maps
+}
+
+fn create_source_map(input: &str) -> Option<SourceToDestinationMap> {
+    let numbers = common_ops::get_numbers(input);
+    if numbers.len() == 3 {
+        let destination_range_start = numbers[0];
+        let source_range_start = numbers[1];
+        let range = numbers[2];
+        let map = SourceToDestinationMap::new(destination_range_start, source_range_start, range);
+        Some(map)
+    } else {
+        None
+    }
 }
 
 #[derive(Debug)]
@@ -132,8 +143,17 @@ impl SourceToDestinationMap {
 
 #[cfg(test)]
 mod tests {
-    // #[test]
-    // fn test_create_categories {
+    //     use super::CategoryMap;
 
-    // }
+    //     #[test]
+    //     fn test_create_category_map() {
+    //         let example = "seed-to-soil map:
+    // 50 98 2
+    // 52 50 48";
+    //         let
+    //         let category = CategoryMap {
+    //             name: String::from("seed-to-soil"),
+    //             vec![]
+    //         }
+    //     }
 }
