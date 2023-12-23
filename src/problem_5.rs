@@ -143,9 +143,9 @@ impl MapElement {
 
 #[cfg(test)]
 mod tests {
-    use crate::problem_5::create_category_map;
+    use crate::problem_5::{category_transform, create_category_map};
 
-    use super::{create_map_element, CategoryMap, MapElement};
+    use super::{collect_seeds, create_map_element, CategoryMap, MapElement};
 
     #[test]
     fn test_create_category_map() {
@@ -159,5 +159,19 @@ mod tests {
             maps: vec![map_element_1, map_element_2],
         };
         assert_eq!(Some(category), create_category_map(example));
+    }
+
+    #[test]
+    fn test_category_transform() {
+        let seeds = vec![79, 14, 55, 13];
+        let map_element_1 = MapElement::new(50, 98, 2);
+        let map_element_2 = MapElement::new(52, 50, 48);
+        let category = CategoryMap {
+            name: String::from("seed-to-soil"),
+            maps: vec![map_element_1, map_element_2],
+        };
+
+        let soils = vec![81, 14, 57, 13];
+        assert_eq!(soils, category_transform(seeds, category));
     }
 }
