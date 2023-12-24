@@ -1,6 +1,6 @@
 use std::{collections::HashMap, error::Error, fs};
 
-use crate::common_ops;
+use crate::utils::common_ops;
 
 pub fn problem_4() -> Result<(), Box<dyn Error>> {
     let file_path = "./res/04/input";
