@@ -3,7 +3,7 @@ use std::{
     fmt::Display,
 };
 
-struct Interval<T: Ord + Eq + Display + Copy> {
+pub struct Interval<T: Ord + Eq + Display + Copy> {
     start: T,
     end: T,
 }
@@ -30,6 +30,22 @@ impl<T: Ord + Eq + Display + Copy> Interval<T> {
             })
         } else {
             None
+        }
+    }
+
+    fn partition(&self, other: &Interval<T>) -> Vec<Interval<T>> {
+        if self.collide(other) {
+            let overlap_start = max(self.start, other.start);
+            let overlap_end = min(self.end, other.end);
+            let overlap = Interval {
+                start: overlap_start,
+                end: overlap_end,
+            };
+            let left = Interval::new(self.start, overlap_start);
+            let right = Interval::new(overlap_end, self.end);
+            vec![overlap]
+        } else {
+            vec![Interval::new(self.start, self.end).unwrap()]
         }
     }
 
