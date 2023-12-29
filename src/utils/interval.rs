@@ -33,21 +33,36 @@ impl<T: Ord + Eq + Display + Copy> Interval<T> {
         }
     }
 
-    fn partition(&self, other: &Interval<T>) -> Vec<Interval<T>> {
+    fn get_overlap(&self, other: &Interval<T>) -> IntervalOverlap<T> {
+        // let mut return_val = Vec::new();
         if self.collide(other) {
             let overlap_start = max(self.start, other.start);
             let overlap_end = min(self.end, other.end);
-            let overlap = Interval {
+            let overlap = Some(Interval {
                 start: overlap_start,
                 end: overlap_end,
-            };
-            let left = Interval::new(self.start, overlap_start);
-            let right = Interval::new(overlap_end, self.end);
-            vec![overlap]
+            });
+            let left = Interval::new(self.start, overlap_start).ok();
+            let right = Interval::new(overlap_end, self.end).ok();
+            IntervalOverlap {
+                left,
+                overlap,
+                right,
+            }
         } else {
-            vec![Interval::new(self.start, self.end).unwrap()]
+            IntervalOverlap {
+                left: None,
+                overlap: Some(Interval::new(self.start, self.end).unwrap()),
+                right: None,
+            }
         }
     }
 
     fn disjunct(&self, other: &Interval<T>) {}
+}
+
+pub struct IntervalOverlap<T: Ord + Eq + Display + Copy> {
+    left: Option<Interval<T>>,
+    overlap: Option<Interval<T>>,
+    right: Option<Interval<T>>,
 }

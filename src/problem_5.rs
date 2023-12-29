@@ -3,9 +3,9 @@
  * 2. Create a function that can read the contents of the files into the struct
  */
 
-use std::{error::Error, fs};
+use std::{error::Error, fs, ops::Range};
 
-use crate::common_ops;
+use crate::utils::common_ops;
 
 pub fn problem_5() -> Result<(), Box<dyn Error>> {
     let file_path = "./res/05/input";
@@ -132,28 +132,35 @@ impl CategoryMap {
         }
         source
     }
+
+    fn transform_range(&self, source_range: Range<i64>) -> Vec<Range<i64>> {
+        let mut ranges: Vec<Range<i64>> = Vec::new();
+        for map in &self.maps {
+            // let result = map.transform_range(source_range);
+        }
+
+        ranges
+    }
 }
 
 #[derive(Debug, PartialEq, Eq)]
 struct MapElement {
-    destination_range_start: i64,
-    source_range_start: i64,
-    range: i64,
+    range: Range<i64>,
     source_to_destination_difference: i64,
 }
 impl MapElement {
-    fn new(destination_range_start: i64, source_range_start: i64, range: i64) -> MapElement {
+    fn new(destination_range_start: i64, source_range_start: i64, length: i64) -> MapElement {
         let source_to_destination_difference = destination_range_start - source_range_start;
+        let range = source_range_start..source_range_start + length;
+
         MapElement {
-            destination_range_start,
-            source_range_start,
             range,
             source_to_destination_difference,
         }
     }
 
     fn in_source_range(&self, source: i64) -> bool {
-        source >= self.source_range_start && source < self.source_range_start + self.range
+        self.range.contains(&source)
     }
 
     fn transform(&self, source: i64) -> Option<i64> {
@@ -163,6 +170,8 @@ impl MapElement {
             None
         }
     }
+
+    // fn transform_range(&self, source_range: Range<i64>) -> Option<Vec<Range<i64>>> {}
 }
 
 // PART 2
@@ -178,12 +187,22 @@ fn find_locations_ranges(input: &String) -> Option<Vec<i64>> {
     let categories = create_categories(sections.collect());
 
     for category in categories {
-        seeds = category_transform(seeds, category);
+        // TODO: Rewrite category transform to take seed ranges
+        // seeds = category_transform(seeds, category);
     }
-    Some(seeds)
+    // Some(seeds)
+    None
 }
 
-fn collect_seed_ranges(seeds_str: &str) -> Option<Vec<i64>> {
+// fn category_transform_ranges(
+//     seed_lists: Vec<Range<i64>>,
+//     category: CategoryMap,
+// ) -> Vec<Range<i64>> {
+//     seed_lists.iter().map(|&x| category.transform(x)).collect()
+// }
+
+// ! Creating all the numbers at once is a bad idea
+fn collect_seed_ranges(seeds_str: &str) -> Option<Vec<Range<i64>>> {
     if let Some(numbers_str) = seeds_str.strip_prefix("seeds: ") {
         let numbers = common_ops::get_numbers(numbers_str);
         Some(create_seed_ranges(numbers))
@@ -192,11 +211,11 @@ fn collect_seed_ranges(seeds_str: &str) -> Option<Vec<i64>> {
     }
 }
 
-fn create_seed_ranges(numbers: Vec<i64>) -> Vec<i64> {
-    let mut seeds: Vec<i64> = Vec::new();
+fn create_seed_ranges(numbers: Vec<i64>) -> Vec<Range<i64>> {
+    let mut seeds: Vec<Range<i64>> = Vec::new();
     let mut num_iter = numbers.iter();
-    while let (Some(start), Some(range)) = (num_iter.next(), num_iter.next()) {
-        seeds.append(&mut seed_range(*start, *range));
+    while let (Some(&start), Some(&range)) = (num_iter.next(), num_iter.next()) {
+        seeds.push(start..start + range);
     }
     seeds
 }
