@@ -5,6 +5,7 @@ use std::{
 
 use crate::utils::incrementable::Incrementable;
 
+#[derive(Debug, PartialEq, Eq)]
 pub struct Interval<T: Ord + Eq + Display + Copy + Incrementable> {
     start: T,
     end: T,
@@ -21,6 +22,10 @@ impl<T: Ord + Eq + Display + Copy + Incrementable> Interval<T> {
         } else {
             Interval { start, end }
         }
+    }
+
+    pub fn contains(&self, point: &T) -> bool {
+        self.start <= *point && self.end >= *point
     }
 
     fn collide(&self, other: &Interval<T>) -> bool {
@@ -40,7 +45,7 @@ impl<T: Ord + Eq + Display + Copy + Incrementable> Interval<T> {
         }
     }
 
-    fn get_overlap(&self, other: &Interval<T>) -> IntervalOverlap<T> {
+    pub fn get_overlap(&self, other: &Interval<T>) -> IntervalOverlap<T> {
         if self.collide(other) {
             let overlap_start = max(self.start, other.start);
             let overlap_end = min(self.end, other.end);
@@ -49,34 +54,26 @@ impl<T: Ord + Eq + Display + Copy + Incrementable> Interval<T> {
                 end: overlap_end,
             });
 
-            let left = if other.start >= overlap_start {
-                Some(Interval::new(other.start, overlap_start))
-            } else {
-                None
-            };
-            let right = if overlap_end >= other.end {
-                Some(Interval::new(overlap_end, other.end))
-            } else {
-                None
-            };
+            let mut excess = Vec::new();
 
-            IntervalOverlap {
-                left,
-                overlap,
-                right,
+            if other.start >= overlap_start {
+                excess.push(Interval::new(other.start, overlap_start));
             }
+            if overlap_end >= other.end {
+                excess.push(Interval::new(overlap_end, other.end));
+            }
+
+            IntervalOverlap { overlap, excess }
         } else {
             IntervalOverlap {
-                left: None,
                 overlap: Some(Interval::new(self.start, self.end)),
-                right: None,
+                excess: Vec::new(),
             }
         }
     }
 }
 
 pub struct IntervalOverlap<T: Ord + Eq + Display + Copy + Incrementable> {
-    left: Option<Interval<T>>,
     overlap: Option<Interval<T>>,
-    right: Option<Interval<T>>,
+    excess: Vec<Interval<T>>,
 }
