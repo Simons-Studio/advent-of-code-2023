@@ -66,8 +66,8 @@ impl<T: Ord + Eq + Display + Copy + Incrementable> Interval<T> {
             IntervalOverlap { overlap, excess }
         } else {
             IntervalOverlap {
-                overlap: Some(Interval::new(self.start, self.end)),
-                excess: Vec::new(),
+                overlap: None,
+                excess: vec![Interval::new(self.start, self.end)],
             }
         }
     }
