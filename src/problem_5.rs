@@ -5,7 +5,10 @@
 
 use std::{error::Error, fs, ops::Range};
 
-use crate::utils::{common_ops, interval::Interval};
+use crate::utils::{
+    common_ops,
+    interval::{Interval, IntervalOverlap},
+};
 
 pub fn problem_5() -> Result<(), Box<dyn Error>> {
     let file_path = "./res/05/input";
@@ -133,10 +136,15 @@ impl CategoryMap {
         source
     }
 
-    fn transform_range(&self, source_range: Range<i64>) -> Vec<Range<i64>> {
-        let mut ranges: Vec<Range<i64>> = Vec::new();
+    fn transform_range(&self, source_range: Interval<i64>) -> Vec<Interval<i64>> {
+        let mut ranges = Vec::new();
         for map in &self.maps {
-            // let result = map.transform_range(source_range);
+            let mut result = map.transform_range(source_range);
+            if let Some(transformation) = result.overlap {
+                ranges.append(&mut result.excess);
+                ranges.push(transformation);
+                return ranges;
+            }
         }
 
         ranges
@@ -145,13 +153,13 @@ impl CategoryMap {
 
 #[derive(Debug, PartialEq, Eq)]
 struct MapElement {
-    range: Range<i64>,
+    range: Interval<i64>,
     source_to_destination_difference: i64,
 }
 impl MapElement {
     fn new(destination_range_start: i64, source_range_start: i64, length: i64) -> MapElement {
         let source_to_destination_difference = destination_range_start - source_range_start;
-        let range = source_range_start..source_range_start + length;
+        let range = Interval::new(source_range_start, source_range_start + length);
 
         MapElement {
             range,
@@ -171,7 +179,21 @@ impl MapElement {
         }
     }
 
-    // fn transform_range(&self, source_range: Range<i64>) -> Option<Vec<Range<i64>>> {}
+    fn transform_range(&self, source_range: Interval<i64>) -> IntervalOverlap<i64> {
+        let interval_overlap = self.range.get_overlap(&source_range);
+        // let overlap_option = interval_overlap.overlap;
+        let excess = interval_overlap.excess;
+
+        if let Some(overlap) = interval_overlap.overlap {
+            let overlap_transform = overlap.transform(self.source_to_destination_difference);
+            IntervalOverlap {
+                overlap: Some(overlap_transform),
+                excess,
+            }
+        } else {
+            interval_overlap
+        }
+    }
 }
 
 // PART 2
@@ -195,10 +217,10 @@ fn find_locations_ranges(input: &String) -> Option<Vec<i64>> {
 }
 
 fn category_transform_ranges(
-    seed_ranges: Vec<Range<i64>>,
+    seed_ranges: Vec<Interval<i64>>,
     category: CategoryMap,
 ) -> Vec<Interval<i64>> {
-    let mut unprocessed_seeds = seed_ranges.clone();
+    let mut unprocessed_seeds = seed_ranges.cl;
     let mut processed_seeds = Vec::new();
     while !unprocessed_seeds.is_empty() {
         let range = unprocessed_seeds.pop().unwrap();
@@ -208,7 +230,7 @@ fn category_transform_ranges(
 }
 
 // ! Creating all the numbers at once is a bad idea
-fn collect_seed_ranges(seeds_str: &str) -> Option<Vec<Range<i64>>> {
+fn collect_seed_ranges(seeds_str: &str) -> Option<Vec<Interval<i64>>> {
     if let Some(numbers_str) = seeds_str.strip_prefix("seeds: ") {
         let numbers = common_ops::get_numbers(numbers_str);
         Some(create_seed_ranges(numbers))
@@ -217,17 +239,14 @@ fn collect_seed_ranges(seeds_str: &str) -> Option<Vec<Range<i64>>> {
     }
 }
 
-fn create_seed_ranges(numbers: Vec<i64>) -> Vec<Range<i64>> {
-    let mut seeds: Vec<Range<i64>> = Vec::new();
+fn create_seed_ranges(numbers: Vec<i64>) -> Vec<Interval<i64>> {
+    let mut seeds: Vec<Interval<i64>> = Vec::new();
     let mut num_iter = numbers.iter();
     while let (Some(&start), Some(&range)) = (num_iter.next(), num_iter.next()) {
-        seeds.push(start..start + range);
+        let end = start + range;
+        seeds.push(Interval::new(start, end));
     }
     seeds
-}
-
-fn seed_range(start: i64, range: i64) -> Vec<i64> {
-    (start..start + range).collect()
 }
 
 #[cfg(test)]
