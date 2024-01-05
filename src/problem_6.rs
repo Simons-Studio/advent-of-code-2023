@@ -1,4 +1,4 @@
-use std::{cmp, error::Error, fmt::UpperExp, fs};
+use std::{error::Error, fs};
 
 use crate::utils::common_ops;
 
@@ -22,6 +22,7 @@ pub fn problem_5() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
+#[derive(Debug)]
 struct Race {
     time: i64,
     distance: i64,
@@ -49,17 +50,34 @@ fn zeros(race: Race) -> Option<(i64, i64)> {
     let f_time = race.time as f64;
     let f_distance = race.distance as f64;
 
-    let discriminant = f_time * f_time - f_distance;
+    let discriminant = f_time * f_time - 4.0 * f_distance;
 
     if discriminant >= 0.0 {
-        let f_solution_1 = (f_time + discriminant.sqrt()) / 2.0;
-        let f_solution_2 = (f_time - discriminant.sqrt()) / 2.0;
+        let discriminant_sqrt = discriminant.sqrt();
+        let f_solution_1 = (f_time + discriminant_sqrt) / 2.0;
+        let f_solution_2 = (f_time - discriminant_sqrt) / 2.0;
 
-        let min_solution = f_solution_1.min(f_solution_1) as i64;
-        let max_solution = f_solution_1.max(f_solution_2) as i64 + 1;
+        let min_solution = f_solution_1.min(f_solution_2) as i64 + 1;
+        let max_solution = f_solution_1.max(f_solution_2) as i64;
 
         Some((min_solution, max_solution))
     } else {
         None
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use crate::problem_6::zeros;
+
+    use super::Race;
+
+    #[test]
+    fn test_zeros() {
+        let race_1 = Race {
+            time: 7,
+            distance: 9,
+        };
+        assert_eq!(Some((2, 5)), zeros(race_1));
     }
 }
