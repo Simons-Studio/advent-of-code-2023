@@ -32,19 +32,6 @@ impl<T: Ord + Eq + Display + Copy + Incrementable> Interval<T> {
         other.start <= self.end && self.start <= other.end
     }
 
-    fn intesect(&self, other: &Interval<T>) -> Option<Interval<T>> {
-        if self.collide(other) {
-            let overlap_start = max(self.start, other.start);
-            let overlap_end = min(self.end, other.end);
-            Some(Interval {
-                start: overlap_start,
-                end: overlap_end,
-            })
-        } else {
-            None
-        }
-    }
-
     pub fn get_overlap(&self, other: &Interval<T>) -> Option<Interval<T>> {
         if self.collide(other) {
             let overlap_start = max(self.start, other.start);
