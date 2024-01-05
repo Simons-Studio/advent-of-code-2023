@@ -1,5 +1,5 @@
 use std::{
-    cmp::{max, min},
+    cmp::{self, max, min, Ordering},
     fmt::Display,
 };
 
@@ -68,5 +68,17 @@ impl<T: Ord + Eq + Display + Copy + Incrementable> Interval<T> {
     pub fn transform(&mut self, increment: T) {
         self.start.post_inc_by(increment);
         self.end.post_inc_by(increment);
+    }
+}
+
+impl<T: Ord + Eq + Display + Copy + Incrementable> Ord for Interval<T> {
+    fn cmp(&self, other: &Self) -> Ordering {
+        self.start.cmp(&other.start)
+    }
+}
+
+impl<T: Ord + Eq + Display + Copy + Incrementable> PartialOrd for Interval<T> {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
     }
 }
