@@ -28,7 +28,7 @@ impl<T: Ord + Eq + Display + Copy + Incrementable> Interval<T> {
         self.start <= *point && self.end >= *point
     }
 
-    fn collide(&self, other: &Interval<T>) -> bool {
+    pub fn collide(&self, other: &Interval<T>) -> bool {
         other.start <= self.end && self.start <= other.end
     }
 
@@ -44,6 +44,25 @@ impl<T: Ord + Eq + Display + Copy + Incrementable> Interval<T> {
         } else {
             None
         }
+    }
+
+    pub fn get_disjunction(&self, other: &Interval<T>) -> Vec<Interval<T>> {
+        let mut disjunction = Vec::new();
+        if self.collide(other) {
+            let overlap_start = max(self.start, other.start);
+            let overlap_end = min(self.end, other.end);
+            // Left disjunction
+            if other.start <= overlap_start {
+                let left = Interval::new(other.start, overlap_start);
+                disjunction.push(left);
+            }
+            // Right disjunction
+            if overlap_end <= other.end {
+                let right = Interval::new(overlap_end, other.end);
+                disjunction.push(right);
+            }
+        }
+        disjunction
     }
 
     pub fn transform(&mut self, increment: T) {
