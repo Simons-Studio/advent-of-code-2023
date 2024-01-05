@@ -10,7 +10,7 @@ pub struct Interval<T: Ord + Eq + Display + Copy + Incrementable> {
     end: T,
 }
 impl<T: Ord + Eq + Display + Copy + Incrementable> Interval<T> {
-    fn new(start: T, end: T) -> Interval<T> {
+    pub fn new(start: T, end: T) -> Interval<T> {
         if start > end {
             let mut start = start;
             let mut end = end;
@@ -73,8 +73,6 @@ impl<T: Ord + Eq + Display + Copy + Incrementable> Interval<T> {
             }
         }
     }
-
-    fn disjunct(&self, other: &Interval<T>) {}
 }
 
 pub struct IntervalOverlap<T: Ord + Eq + Display + Copy + Incrementable> {
