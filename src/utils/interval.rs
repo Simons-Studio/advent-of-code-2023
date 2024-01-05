@@ -41,7 +41,6 @@ impl<T: Ord + Eq + Display + Copy + Incrementable> Interval<T> {
     }
 
     fn get_overlap(&self, other: &Interval<T>) -> IntervalOverlap<T> {
-        // let mut return_val = Vec::new();
         if self.collide(other) {
             let overlap_start = max(self.start, other.start);
             let overlap_end = min(self.end, other.end);
@@ -49,8 +48,18 @@ impl<T: Ord + Eq + Display + Copy + Incrementable> Interval<T> {
                 start: overlap_start,
                 end: overlap_end,
             });
-            let left = Some(Interval::new(self.start, overlap_start));
-            let right = Some(Interval::new(overlap_end, self.end));
+
+            let left = if other.start >= overlap_start {
+                Some(Interval::new(other.start, overlap_start))
+            } else {
+                None
+            };
+            let right = if overlap_end >= other.end {
+                Some(Interval::new(overlap_end, other.end))
+            } else {
+                None
+            };
+
             IntervalOverlap {
                 left,
                 overlap,

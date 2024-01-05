@@ -5,7 +5,7 @@
 
 use std::{error::Error, fs, ops::Range};
 
-use crate::utils::common_ops;
+use crate::utils::{common_ops, interval::Interval};
 
 pub fn problem_5() -> Result<(), Box<dyn Error>> {
     let file_path = "./res/05/input";
@@ -194,12 +194,18 @@ fn find_locations_ranges(input: &String) -> Option<Vec<i64>> {
     None
 }
 
-// fn category_transform_ranges(
-//     seed_lists: Vec<Range<i64>>,
-//     category: CategoryMap,
-// ) -> Vec<Range<i64>> {
-//     seed_lists.iter().map(|&x| category.transform(x)).collect()
-// }
+fn category_transform_ranges(
+    seed_ranges: Vec<Range<i64>>,
+    category: CategoryMap,
+) -> Vec<Interval<i64>> {
+    let mut unprocessed_seeds = seed_ranges.clone();
+    let mut processed_seeds = Vec::new();
+    while !unprocessed_seeds.is_empty() {
+        let range = unprocessed_seeds.pop().unwrap();
+    }
+
+    None
+}
 
 // ! Creating all the numbers at once is a bad idea
 fn collect_seed_ranges(seeds_str: &str) -> Option<Vec<Range<i64>>> {
