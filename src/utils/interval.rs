@@ -45,30 +45,17 @@ impl<T: Ord + Eq + Display + Copy + Incrementable> Interval<T> {
         }
     }
 
-    pub fn get_overlap(&self, other: &Interval<T>) -> IntervalOverlap<T> {
+    pub fn get_overlap(&self, other: &Interval<T>) -> Option<Interval<T>> {
         if self.collide(other) {
             let overlap_start = max(self.start, other.start);
             let overlap_end = min(self.end, other.end);
-            let overlap = Some(Interval {
+            let overlap = Interval {
                 start: overlap_start,
                 end: overlap_end,
-            });
-
-            let mut excess = Vec::new();
-
-            if other.start >= overlap_start {
-                excess.push(Interval::new(other.start, overlap_start));
-            }
-            if overlap_end >= other.end {
-                excess.push(Interval::new(overlap_end, other.end));
-            }
-
-            IntervalOverlap { overlap, excess }
+            };
+            Some(overlap)
         } else {
-            IntervalOverlap {
-                overlap: None,
-                excess: vec![Interval::new(self.start, self.end)],
-            }
+            None
         }
     }
 
@@ -76,9 +63,4 @@ impl<T: Ord + Eq + Display + Copy + Incrementable> Interval<T> {
         self.start.post_inc_by(increment);
         self.end.post_inc_by(increment);
     }
-}
-
-pub struct IntervalOverlap<T: Ord + Eq + Display + Copy + Incrementable> {
-    pub overlap: Option<Interval<T>>,
-    pub excess: Vec<Interval<T>>,
 }
