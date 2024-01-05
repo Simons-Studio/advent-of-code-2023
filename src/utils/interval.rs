@@ -5,7 +5,7 @@ use std::{
 
 use crate::utils::incrementable::Incrementable;
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy)]
 pub struct Interval<T: Ord + Eq + Display + Copy + Incrementable> {
     start: T,
     end: T,
