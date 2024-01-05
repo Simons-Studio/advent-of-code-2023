@@ -6,19 +6,33 @@ pub fn problem_6() -> Result<(), Box<dyn Error>> {
     let file_path = "../res/06/input";
     let contents = fs::read_to_string(file_path)?;
 
-    let possible_wins = number_of_solutions(contents);
+    let possible_wins = number_of_solutions(&contents);
     println!("The number of possible wins is: {}", possible_wins);
+
+    if let Some(one_solution) = one_big_solution(&contents) {
+        println!("The single solution is: {}", one_solution);
+    }
 
     Ok(())
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Eq)]
 struct Race {
     time: i64,
     distance: i64,
 }
 
-fn number_of_solutions(input: String) -> i64 {
+fn one_big_solution(input: &String) -> Option<i64> {
+    let race = create_one_race(input);
+
+    if let Some((lower, upper)) = zeros(race) {
+        Some(upper - lower + 1)
+    } else {
+        None
+    }
+}
+
+fn number_of_solutions(input: &String) -> i64 {
     let mut possible_wins = 1;
 
     let races = create_races(input);
@@ -33,7 +47,32 @@ fn number_of_solutions(input: String) -> i64 {
     possible_wins
 }
 
-fn create_races(input: String) -> Vec<Race> {
+fn create_one_race(input: &String) -> Race {
+    let mut lines = input.lines();
+
+    let time_segments: Vec<&str> = lines
+        .next()
+        .unwrap()
+        .strip_prefix("Time:")
+        .unwrap()
+        .split_whitespace()
+        .collect();
+
+    let dist_segments: Vec<&str> = lines
+        .next()
+        .unwrap()
+        .strip_prefix("Distance:")
+        .unwrap()
+        .split_whitespace()
+        .collect();
+
+    let time: i64 = time_segments.concat().parse().unwrap();
+    let distance: i64 = dist_segments.concat().parse().unwrap();
+
+    Race { time, distance }
+}
+
+fn create_races(input: &String) -> Vec<Race> {
     let mut lines = input.lines();
     let mut races = Vec::new();
 
@@ -75,7 +114,7 @@ fn zeros(race: Race) -> Option<(i64, i64)> {
 mod test {
     use crate::problem_6::{number_of_solutions, zeros};
 
-    use super::Race;
+    use super::{create_one_race, Race};
 
     #[test]
     fn test_zeros() {
@@ -104,6 +143,19 @@ mod test {
             "Time:      7  15   30
 Distance:  9  40  200",
         );
-        assert_eq!(number_of_solutions(input), 288);
+        assert_eq!(number_of_solutions(&input), 288);
+    }
+
+    #[test]
+    fn test_create_one_race() {
+        let input = String::from(
+            "Time:      7  15   30
+Distance:  9  40  200",
+        );
+        let race = Race {
+            time: 71530,
+            distance: 940200,
+        };
+        assert_eq!(create_one_race(&input), race)
     }
 }
