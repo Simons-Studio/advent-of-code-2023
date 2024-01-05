@@ -244,11 +244,10 @@ fn create_seed_ranges(numbers: Vec<i64>) -> Vec<Interval<i64>> {
 
 #[cfg(test)]
 mod tests {
-    use std::result;
 
     use crate::{
         problem_5::{category_transform, collect_seed_ranges, collect_seeds, create_category_map},
-        utils::interval::{self, Interval},
+        utils::interval::Interval,
     };
 
     use super::{category_transform_ranges, CategoryMap, MapElement};
@@ -301,8 +300,6 @@ mod tests {
 
     #[test]
     fn test_category_range_transform() {
-        let interval_1 = Interval::new(79, 79 + 14);
-        let interval_2 = Interval::new(55, 55 + 13);
         let interval_3 = Interval::new(95, 98);
 
         let map_element_1 = MapElement::new(50, 98, 2);
@@ -339,7 +336,6 @@ mod tests {
         let interval_2 = Interval::new(55 + 2, 55 + 13 + 2);
         let interval_3 = Interval::new(95 + 2, 97 + 2);
         let interval_4 = Interval::new(98 - 48, 99 - 48);
-        let interval_5 = Interval::new(100, 100);
         let mut result = vec![interval_1, interval_2, interval_3, interval_4];
 
         assert_eq!(transformation.sort(), result.sort());
