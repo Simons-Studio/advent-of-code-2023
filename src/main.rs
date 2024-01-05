@@ -16,7 +16,7 @@ mod utils;
 use std::process;
 
 fn main() {
-    let selector = 5;
+    let selector = 6;
 
     match selector {
         1 => {
@@ -49,6 +49,13 @@ fn main() {
 
         5 => {
             if let Err(e) = problem_5::problem_5() {
+                println!("Application Error: {e}");
+                process::exit(1);
+            }
+        }
+
+        6 => {
+            if let Err(e) = problem_6::problem_6() {
                 println!("Application Error: {e}");
                 process::exit(1);
             }
