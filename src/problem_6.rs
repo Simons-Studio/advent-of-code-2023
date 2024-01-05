@@ -79,5 +79,11 @@ mod test {
             distance: 9,
         };
         assert_eq!(Some((2, 5)), zeros(race_1));
+
+        let race_2 = Race {
+            time: 15,
+            distance: 40,
+        };
+        assert_eq!(Some((4, 11)), zeros(race_2));
     }
 }
