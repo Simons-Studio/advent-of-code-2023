@@ -3,16 +3,23 @@ use std::{
     fmt::Display,
 };
 
-pub struct Interval<T: Ord + Eq + Display + Copy> {
+use self::incrementable::Incrementable;
+
+pub struct Interval<T: Ord + Eq + Display + Copy + Incrementable> {
     start: T,
     end: T,
 }
-impl<T: Ord + Eq + Display + Copy> Interval<T> {
-    fn new(start: T, end: T) -> Result<Interval<T>, String> {
+impl<T: Ord + Eq + Display + Copy + Incrementable> Interval<T> {
+    fn new(start: T, end: T) -> Interval<T> {
         if start > end {
-            Err(format!("Start ({}) is not less than end ({})", start, end))
+            let mut start = start;
+            let mut end = end;
+            Interval {
+                start: end.post_inc(),
+                end: start.post_inc(),
+            }
         } else {
-            Ok(Interval { start, end })
+            Interval { start, end }
         }
     }
 
@@ -42,8 +49,8 @@ impl<T: Ord + Eq + Display + Copy> Interval<T> {
                 start: overlap_start,
                 end: overlap_end,
             });
-            let left = Interval::new(self.start, overlap_start).ok();
-            let right = Interval::new(overlap_end, self.end).ok();
+            let left = Some(Interval::new(self.start, overlap_start));
+            let right = Some(Interval::new(overlap_end, self.end));
             IntervalOverlap {
                 left,
                 overlap,
@@ -52,7 +59,7 @@ impl<T: Ord + Eq + Display + Copy> Interval<T> {
         } else {
             IntervalOverlap {
                 left: None,
-                overlap: Some(Interval::new(self.start, self.end).unwrap()),
+                overlap: Some(Interval::new(self.start, self.end)),
                 right: None,
             }
         }
@@ -61,8 +68,77 @@ impl<T: Ord + Eq + Display + Copy> Interval<T> {
     fn disjunct(&self, other: &Interval<T>) {}
 }
 
-pub struct IntervalOverlap<T: Ord + Eq + Display + Copy> {
+pub struct IntervalOverlap<T: Ord + Eq + Display + Copy + Incrementable> {
     left: Option<Interval<T>>,
     overlap: Option<Interval<T>>,
     right: Option<Interval<T>>,
+}
+
+mod incrementable {
+    // Copied from aSpex in
+    // https://stackoverflow.com/questions/41669634/implementing-a-generic-incrementable-trait-in-rust
+    pub trait Incrementable: Copy + std::ops::AddAssign<Self> {
+        fn one() -> Self;
+
+        fn post_inc(&mut self) -> Self {
+            self.post_inc_by(Self::one())
+        }
+
+        fn post_inc_by(&mut self, n: Self) -> Self {
+            let tmp = *self;
+            *self += n;
+            tmp
+        }
+    }
+
+    impl Incrementable for u8 {
+        fn one() -> Self {
+            1
+        }
+    }
+    impl Incrementable for u16 {
+        fn one() -> Self {
+            1
+        }
+    }
+    impl Incrementable for u32 {
+        fn one() -> Self {
+            1
+        }
+    }
+    impl Incrementable for u64 {
+        fn one() -> Self {
+            1
+        }
+    }
+    impl Incrementable for i8 {
+        fn one() -> Self {
+            1
+        }
+    }
+    impl Incrementable for i16 {
+        fn one() -> Self {
+            1
+        }
+    }
+    impl Incrementable for i32 {
+        fn one() -> Self {
+            1
+        }
+    }
+    impl Incrementable for i64 {
+        fn one() -> Self {
+            1
+        }
+    }
+    impl Incrementable for f32 {
+        fn one() -> Self {
+            1.0
+        }
+    }
+    impl Incrementable for f64 {
+        fn one() -> Self {
+            1.0
+        }
+    }
 }
