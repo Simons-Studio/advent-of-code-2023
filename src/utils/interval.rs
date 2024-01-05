@@ -53,12 +53,12 @@ impl<T: Ord + Eq + Display + Copy + Incrementable> Interval<T> {
             let overlap_start = max(self.start, other.start);
             let overlap_end = min(self.end, other.end);
             // Left disjunction
-            if self.start <= overlap_start {
+            if self.start < overlap_start {
                 let left = Interval::new(self.start, overlap_start);
                 disjunction.push(left);
             }
             // Right disjunction
-            if overlap_end <= self.end {
+            if overlap_end < self.end {
                 let right = Interval::new(overlap_end, self.end);
                 disjunction.push(right);
             }
@@ -86,6 +86,43 @@ impl<T: Ord + Eq + Display + Copy + Incrementable> PartialOrd for Interval<T> {
 
 impl<T: Ord + Eq + Display + Copy + Incrementable> fmt::Display for Interval<T> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "[{},{})", self.start, self.end)
+        write!(f, "[{}, {})", self.start, self.end)
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::Interval;
+
+    #[test]
+    fn test_ordering() {
+        let interval_1 = Interval::new(0, 10);
+        let interval_2 = Interval::new(5, 15);
+        assert!(interval_1 < interval_2);
+    }
+
+    #[test]
+    fn test_intersection() {
+        let interval_1 = Interval::new(0, 10);
+        let interval_2 = Interval::new(5, 15);
+        let interval_3 = Interval::new(5, 10);
+        assert_eq!(interval_1.intersection(&interval_2), Some(interval_3));
+    }
+
+    #[test]
+    fn test_disjunction() {
+        let interval_1 = Interval::new(0, 10);
+        let interval_2 = Interval::new(5, 15);
+        let interval_3 = Interval::new(0, 5);
+        assert_eq!(interval_1.disjunction(&interval_2), vec![interval_3]);
+
+        let interval_1 = Interval::new(0, 15);
+        let interval_2 = Interval::new(5, 10);
+        let interval_3 = Interval::new(0, 5);
+        let interval_4 = Interval::new(10, 15);
+        assert_eq!(
+            interval_1.disjunction(&interval_2),
+            vec![interval_3, interval_4]
+        );
     }
 }
