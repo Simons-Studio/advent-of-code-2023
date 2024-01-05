@@ -1,3 +1,4 @@
+use core::fmt;
 use std::{
     cmp::{self, max, min, Ordering},
     fmt::Display,
@@ -80,5 +81,11 @@ impl<T: Ord + Eq + Display + Copy + Incrementable> Ord for Interval<T> {
 impl<T: Ord + Eq + Display + Copy + Incrementable> PartialOrd for Interval<T> {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         Some(self.cmp(other))
+    }
+}
+
+impl<T: Ord + Eq + Display + Copy + Incrementable> fmt::Display for Interval<T> {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "[{},{})", self.start, self.end)
     }
 }
