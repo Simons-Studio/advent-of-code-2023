@@ -214,7 +214,9 @@ fn category_transform_ranges(
     while !unprocessed_seeds.is_empty() {
         let range = unprocessed_seeds.pop().unwrap();
         let (transformed, mut leftover) = category.transform_range(range);
-        unprocessed_seeds.append(&mut leftover);
+        if !leftover.is_empty() {
+            unprocessed_seeds.append(&mut leftover);
+        }
         processed_seeds.push(transformed);
     }
 
@@ -242,9 +244,14 @@ fn create_seed_ranges(numbers: Vec<i64>) -> Vec<Interval<i64>> {
 
 #[cfg(test)]
 mod tests {
-    use crate::problem_5::{category_transform, collect_seeds, create_category_map};
+    use std::result;
 
-    use super::{CategoryMap, MapElement};
+    use crate::{
+        problem_5::{category_transform, collect_seed_ranges, collect_seeds, create_category_map},
+        utils::interval::{self, Interval},
+    };
+
+    use super::{category_transform_ranges, CategoryMap, MapElement};
 
     #[test]
     fn test_create_category_map() {
@@ -279,5 +286,62 @@ mod tests {
         let seeds = vec![79, 14, 55, 13];
         let seeds_str = "seeds: 79 14 55 13";
         assert_eq!(Some(seeds), collect_seeds(seeds_str));
+    }
+
+    // Part 2
+
+    #[test]
+    fn test_collect_seed_ranges() {
+        let interval_1 = Interval::new(79, 79 + 14);
+        let interval_2 = Interval::new(55, 55 + 13);
+        let seed_ranges = vec![interval_1, interval_2];
+        let seeds_str = "seeds: 79 14 55 13";
+        assert_eq!(Some(seed_ranges), collect_seed_ranges(seeds_str));
+    }
+
+    #[test]
+    fn test_category_range_transform() {
+        let interval_1 = Interval::new(79, 79 + 14);
+        let interval_2 = Interval::new(55, 55 + 13);
+        let interval_3 = Interval::new(95, 98);
+
+        let map_element_1 = MapElement::new(50, 98, 2);
+        let map_element_2 = MapElement::new(52, 50, 48);
+        let category = CategoryMap {
+            name: String::from("seed-to-soil"),
+            maps: vec![map_element_1, map_element_2],
+        };
+
+        let (transformation, excess) = category.transform_range(interval_3);
+
+        println!("{:?}", excess);
+
+        assert_eq!(transformation, Interval::new(97, 100));
+    }
+
+    #[test]
+    fn test_category_transform_ranges() {
+        let interval_1 = Interval::new(79, 79 + 14);
+        let interval_2 = Interval::new(55, 55 + 13);
+        let interval_3 = Interval::new(95, 100);
+        let seed_ranges = vec![interval_1, interval_2, interval_3];
+
+        let map_element_1 = MapElement::new(50, 98, 2);
+        let map_element_2 = MapElement::new(52, 50, 48);
+        let category = CategoryMap {
+            name: String::from("seed-to-soil"),
+            maps: vec![map_element_1, map_element_2],
+        };
+
+        let mut transformation = category_transform_ranges(seed_ranges, category);
+
+        let interval_1 = Interval::new(79 + 2, 79 + 14 + 2);
+        let interval_2 = Interval::new(55 + 2, 55 + 13 + 2);
+        let interval_3 = Interval::new(95 + 2, 97 + 2);
+        let interval_4 = Interval::new(98 - 48, 99 - 48);
+        let interval_5 = Interval::new(100, 100);
+        let mut result = vec![interval_1, interval_2, interval_3, interval_4];
+
+        assert_eq!(transformation.sort(), result.sort());
     }
 }
