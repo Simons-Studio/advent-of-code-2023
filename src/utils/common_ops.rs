@@ -10,7 +10,7 @@ pub fn get_numbers(number_list_string: &str) -> Vec<i64> {
 
 #[cfg(test)]
 mod tests {
-    use crate::common_ops::get_numbers;
+    use crate::utils::common_ops::get_numbers;
 
     #[test]
     fn get_numbers_test() {
