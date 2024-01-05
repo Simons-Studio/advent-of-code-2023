@@ -136,18 +136,16 @@ impl CategoryMap {
         source
     }
 
-    fn transform_range(&self, source_range: Interval<i64>) -> Vec<Interval<i64>> {
-        let mut ranges = Vec::new();
+    fn transform_range(&self, source_range: Interval<i64>) -> (Interval<i64>, Vec<Interval<i64>>) {
         for map in &self.maps {
-            let mut result = map.transform_range(source_range);
-            if let Some(transformation) = result.overlap {
-                ranges.append(&mut result.excess);
-                ranges.push(transformation);
-                return ranges;
+            let result = map.transform_range(source_range);
+            if let Some(transformation) = result {
+                let disjunction = source_range.disjunction(&map.range);
+                return (transformation, disjunction);
             }
         }
 
-        ranges
+        (source_range, Vec::new())
     }
 }
 
@@ -179,19 +177,12 @@ impl MapElement {
         }
     }
 
-    fn transform_range(&self, source_range: Interval<i64>) -> IntervalOverlap<i64> {
-        let interval_overlap = self.range.get_overlap(&source_range);
-        // let overlap_option = interval_overlap.overlap;
-        let excess = interval_overlap.excess;
-
-        if let Some(overlap) = interval_overlap.overlap {
-            let overlap_transform = overlap.transform(self.source_to_destination_difference);
-            IntervalOverlap {
-                overlap: Some(overlap_transform),
-                excess,
-            }
+    fn transform_range(&self, source_range: Interval<i64>) -> Option<Interval<i64>> {
+        if let Some(mut intersection) = self.range.intersection(&source_range) {
+            intersection.transform(self.source_to_destination_difference);
+            Some(intersection)
         } else {
-            interval_overlap
+            None
         }
     }
 }
