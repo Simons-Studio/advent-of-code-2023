@@ -5,10 +5,7 @@
 
 use std::{error::Error, fs, ops::Range};
 
-use crate::utils::{
-    common_ops,
-    interval::{Interval, IntervalOverlap},
-};
+use crate::utils::{common_ops, interval::Interval};
 
 pub fn problem_5() -> Result<(), Box<dyn Error>> {
     let file_path = "./res/05/input";
@@ -189,7 +186,7 @@ impl MapElement {
 
 // PART 2
 
-fn find_locations_ranges(input: &String) -> Option<Vec<i64>> {
+fn find_locations_ranges(input: &String) -> Option<Vec<Interval<i64>>> {
     let mut sections = input.split("\n\n");
     let Some(seeds_str) = sections.next() else {
         return None;
@@ -201,26 +198,27 @@ fn find_locations_ranges(input: &String) -> Option<Vec<i64>> {
 
     for category in categories {
         // TODO: Rewrite category transform to take seed ranges
-        // seeds = category_transform(seeds, category);
+        seeds = category_transform_ranges(seeds, category);
     }
-    // Some(seeds)
-    None
+    Some(seeds)
 }
 
 fn category_transform_ranges(
     seed_ranges: Vec<Interval<i64>>,
     category: CategoryMap,
 ) -> Vec<Interval<i64>> {
-    let mut unprocessed_seeds = seed_ranges.cl;
+    let mut unprocessed_seeds = seed_ranges;
     let mut processed_seeds = Vec::new();
     while !unprocessed_seeds.is_empty() {
         let range = unprocessed_seeds.pop().unwrap();
+        let (transformed, mut leftover) = category.transform_range(range);
+        unprocessed_seeds.append(&mut leftover);
+        processed_seeds.push(transformed);
     }
 
-    None
+    processed_seeds
 }
 
-// ! Creating all the numbers at once is a bad idea
 fn collect_seed_ranges(seeds_str: &str) -> Option<Vec<Interval<i64>>> {
     if let Some(numbers_str) = seeds_str.strip_prefix("seeds: ") {
         let numbers = common_ops::get_numbers(numbers_str);
