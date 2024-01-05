@@ -3,7 +3,7 @@
  * 2. Create a function that can read the contents of the files into the struct
  */
 
-use std::{error::Error, fs, ops::Range};
+use std::{error::Error, fs};
 
 use crate::utils::{common_ops, interval::Interval};
 
@@ -11,6 +11,7 @@ pub fn problem_5() -> Result<(), Box<dyn Error>> {
     let file_path = "./res/05/input";
     let contents = fs::read_to_string(file_path)?;
 
+    // PART 1
     let Some(locations) = find_locations(&contents) else {
         // TODO: Create a proper error
         return Err("An error".into());
@@ -22,6 +23,7 @@ pub fn problem_5() -> Result<(), Box<dyn Error>> {
         None => println!("No Locations"),
     }
 
+    // Part 2
     let Some(locations) = find_locations_ranges(&contents) else {
         // TODO: Create a proper error
         return Err("An error".into());
