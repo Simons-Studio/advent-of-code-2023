@@ -71,9 +71,14 @@ impl<T: Ord + Eq + Display + Copy + Incrementable> Interval<T> {
             }
         }
     }
+
+    pub fn transform(&mut self, increment: T) {
+        self.start.post_inc_by(increment);
+        self.end.post_inc_by(increment);
+    }
 }
 
 pub struct IntervalOverlap<T: Ord + Eq + Display + Copy + Incrementable> {
-    overlap: Option<Interval<T>>,
-    excess: Vec<Interval<T>>,
+    pub overlap: Option<Interval<T>>,
+    pub excess: Vec<Interval<T>>,
 }
