@@ -1,6 +1,6 @@
 use core::fmt;
 use std::{
-    cmp::{self, max, min, Ordering},
+    cmp::{max, min, Ordering},
     fmt::Display,
 };
 
