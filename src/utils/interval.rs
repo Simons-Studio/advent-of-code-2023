@@ -102,6 +102,16 @@ mod test {
     }
 
     #[test]
+    fn test_transformation() {
+        let mut interval_1 = Interval::new(0, 10);
+        let interval_2 = Interval::new(5, 15);
+
+        interval_1.transform(5);
+
+        assert_eq!(interval_1, interval_2);
+    }
+
+    #[test]
     fn test_intersection() {
         let interval_1 = Interval::new(0, 10);
         let interval_2 = Interval::new(5, 15);
