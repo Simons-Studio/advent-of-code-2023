@@ -30,7 +30,7 @@ impl<T: Ord + Eq + Display + Copy + Incrementable> Interval<T> {
     }
 
     pub fn collide(&self, other: &Interval<T>) -> bool {
-        other.start <= self.end && self.start <= other.end
+        other.start < self.end && self.start < other.end
     }
 
     pub fn intersection(&self, other: &Interval<T>) -> Option<Interval<T>> {
@@ -117,6 +117,10 @@ mod test {
         let interval_2 = Interval::new(5, 15);
         let interval_3 = Interval::new(5, 10);
         assert_eq!(interval_1.intersection(&interval_2), Some(interval_3));
+
+        let interval_1 = Interval::new(0, 5);
+        let interval_2 = Interval::new(5, 15);
+        assert_eq!(interval_1.intersection(&interval_2), None);
     }
 
     #[test]
