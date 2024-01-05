@@ -6,6 +6,19 @@ pub fn problem_5() -> Result<(), Box<dyn Error>> {
     let file_path = "./res/06/input";
     let contents = fs::read_to_string(file_path)?;
 
+    let mut possible_wins = 1;
+
+    let races = create_races(contents);
+
+    for race in races {
+        if let Some((lower, upper)) = zeros(race) {
+            let diff = upper - lower;
+            possible_wins *= diff;
+        }
+    }
+
+    println!("The number of possible wins is: {}", possible_wins);
+
     Ok(())
 }
 
